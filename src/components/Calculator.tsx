@@ -19,12 +19,17 @@ export function Calculator() {
   return (
     <main className="mx-auto max-w-3xl px-4 sm:px-6 py-10 sm:py-16">
       <header className="mb-8 flex items-center gap-3">
+        {/* next/image non applica automaticamente basePath agli SVG (serviti
+            "unoptimized"): src assoluto verso questo stesso dominio, stessa
+            tecnica di assetPrefix in next.config.ts, per risolvere correttamente
+            sia in standalone che montato sotto /AI-builder-jethr via rewrite. */}
         <Image
-          src="/brand/jethr-pictogram.svg"
+          src="https://calcolatore-ral-netto-jethr.vercel.app/AI-builder-jethr/brand/jethr-pictogram.svg"
           alt=""
           width={32}
           height={32}
           className="shrink-0"
+          unoptimized
         />
         <div>
           <p className="text-xs font-medium text-muted uppercase tracking-wide">
