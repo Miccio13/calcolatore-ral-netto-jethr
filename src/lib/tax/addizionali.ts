@@ -1,52 +1,78 @@
 import { formatNumero } from '../format'
+import type { Comune } from './comuni-2026'
 import { FONTI } from './fonti'
-import { ADDIZIONALE_COMUNALE_MILANO_2026, ADDIZIONALE_REGIONALE_LOMBARDIA_2026 } from './constants-2026'
 import { calcolaProgressivo } from './progressive'
+import type { RegioneAddizionale } from './regioni-2026'
 import type { VoceBreakdown } from './types'
 
 /**
- * Addizionale regionale IRPEF Lombardia: progressiva per scaglioni, stesso meccanismo
- * dell'IRPEF nazionale (art. 72 c.1 L.R. Lombardia 10/2003).
+ * Addizionale regionale IRPEF: gestisce le tre meccaniche osservate nelle
+ * leggi regionali (vedi regioni-2026.ts) — progressiva a scaglioni marginali
+ * (come l'IRPEF nazionale), aliquota unica flat, o esenzione sotto soglia con
+ * aliquota piena sull'intero imponibile sopra soglia.
  *
- * Semplificazione dichiarata: per legge si applica sul reddito dell'anno precedente,
- * con versamento in 11 rate l'anno successivo. In questa proiezione annuale si assume
- * stesso anno d'imposta.
+ * Semplificazione dichiarata, invariata dalla v1: per legge l'addizionale si
+ * applica sul reddito dell'anno precedente, con versamento in 11 rate l'anno
+ * successivo. In questa proiezione annuale si assume lo stesso anno d'imposta.
  */
-export function calcolaAddizionaleRegionale(imponibile: number): VoceBreakdown {
-  const importo = calcolaProgressivo(imponibile, ADDIZIONALE_REGIONALE_LOMBARDIA_2026)
+export function calcolaAddizionaleRegionale(
+  regione: RegioneAddizionale,
+  imponibile: number
+): VoceBreakdown {
+  let importo: number
+  let formula: string
+
+  if (regione.tipo === 'flat') {
+    importo = imponibile * regione.aliquota
+    formula = `${(regione.aliquota * 100).toFixed(2)}% su imponibile ${formatNumero(imponibile)} = ${importo.toFixed(2)}`
+  } else if (regione.tipo === 'sogliaFlat') {
+    const esente = imponibile <= regione.soglia
+    importo = esente ? 0 : imponibile * regione.aliquota
+    formula = esente
+      ? `esente: imponibile ${formatNumero(imponibile)} ≤ ${formatNumero(regione.soglia)}`
+      : `${(regione.aliquota * 100).toFixed(2)}% sull'intero imponibile ${formatNumero(imponibile)} (soglia ${formatNumero(regione.soglia)} superata) = ${importo.toFixed(2)}`
+  } else {
+    importo = calcolaProgressivo(imponibile, regione.scaglioni)
+    formula = `progressiva per scaglioni su imponibile ${formatNumero(imponibile)} = ${importo.toFixed(2)}`
+  }
 
   return {
     id: 'addizionale-regionale',
-    label: 'Addizionale regionale (Lombardia)',
+    label: 'Addizionale regionale',
     importo,
     segno: 'trattenuta',
     percentualeRal: imponibile > 0 ? importo / imponibile : 0,
-    formula: `progressiva 1,23%-1,73% su imponibile ${formatNumero(imponibile)} = ${importo.toFixed(2)}`,
-    fonte: FONTI.addizionaleRegionaleLombardia,
+    formula,
+    fonte: FONTI.addizionaliRegionali2026,
   }
 }
 
 /**
- * Addizionale comunale IRPEF Milano: aliquota unica 0,80%, con soglia di esenzione a
- * 23.000 €. È una soglia, non una franchigia: sopra 23.000 si paga sull'intero
- * imponibile, non solo sull'eccedenza (delibera comunale n. 46/2020).
+ * Addizionale comunale IRPEF. Meccanica uniforme (verificata su Milano ed
+ * estesa agli altri comuni): sotto la soglia di esenzione zero, sopra soglia
+ * si applicano gli scaglioni in modo marginale sull'intero imponibile — è una
+ * soglia, non una franchigia. Un comune con aliquota unica è semplicemente un
+ * array di un solo scaglione, quindi la stessa funzione copre entrambi i casi.
  *
- * Stessa semplificazione dichiarata dell'addizionale regionale: anno d'imposta unico.
+ * Accetta anche un comune "personalizzato" (aliquota/soglia inseriti a mano
+ * dall'utente per un comune non presente nel dataset) con la stessa forma.
  */
-export function calcolaAddizionaleComunale(imponibile: number): VoceBreakdown {
-  const { aliquota, sogliaEsenzione } = ADDIZIONALE_COMUNALE_MILANO_2026
-  const esente = imponibile <= sogliaEsenzione
-  const importo = esente ? 0 : imponibile * aliquota
+export function calcolaAddizionaleComunale(
+  comune: Pick<Comune, 'nome' | 'soglia' | 'scaglioni'>,
+  imponibile: number
+): VoceBreakdown {
+  const esente = imponibile <= comune.soglia
+  const importo = esente ? 0 : calcolaProgressivo(imponibile, comune.scaglioni)
 
   return {
     id: 'addizionale-comunale',
-    label: 'Addizionale comunale (Milano)',
+    label: `Addizionale comunale (${comune.nome})`,
     importo,
     segno: 'trattenuta',
     percentualeRal: imponibile > 0 ? importo / imponibile : 0,
     formula: esente
-      ? `esente: imponibile ${formatNumero(imponibile)} ≤ 23.000`
-      : `0,80% su imponibile ${formatNumero(imponibile)} = ${importo.toFixed(2)}`,
-    fonte: FONTI.addizionaleComunaleMilano,
+      ? `esente: imponibile ${formatNumero(imponibile)} ≤ ${formatNumero(comune.soglia)}`
+      : `su imponibile ${formatNumero(imponibile)} (soglia ${formatNumero(comune.soglia)} superata) = ${importo.toFixed(2)}`,
+    fonte: FONTI.addizionaliComunali2026,
   }
 }

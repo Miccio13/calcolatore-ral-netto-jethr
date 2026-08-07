@@ -6,15 +6,20 @@
  */
 import { calcola } from '../src/lib/tax/calcola'
 import {
-  ADDIZIONALE_COMUNALE_MILANO_2026,
-  ADDIZIONALE_REGIONALE_LOMBARDIA_2026,
+  ALIQUOTA_APPRENDISTATO_2026,
   COSTO_AZIENDA_2026,
   CUNEO_FISCALE_2026,
+  DETRAZIONE_ALTRI_FAMILIARI_2026,
+  DETRAZIONE_CONIUGE_2026,
+  DETRAZIONE_FIGLI_2026,
   DETRAZIONE_LAVORO_DIPENDENTE_2026,
   INPS_2026,
   SCAGLIONI_IRPEF_2026,
   TRATTAMENTO_INTEGRATIVO_2026,
+  WELFARE_2026,
 } from '../src/lib/tax/constants-2026'
+import { COMUNI_2026 } from '../src/lib/tax/comuni-2026'
+import { REGIONI_2026 } from '../src/lib/tax/regioni-2026'
 import { FONTI, type Fonte } from '../src/lib/tax/fonti'
 import { INPUT_DEFAULT } from '../src/lib/tax/types'
 import { writeFileSync } from 'node:fs'
@@ -63,10 +68,14 @@ const RIGHE_MODELLO = [
   { voce: 'IRPEF lorda', base: 'Imponibile fiscale', formula: '23% / 33% / 43% per scaglioni', fonte: FONTI.tuirArt11 },
   { voce: 'Detrazione lavoro dipendente', base: 'Reddito di riferimento', formula: 'da 1.955 € a 0, decrescente da 15.000 a 50.000', fonte: FONTI.tuirArt13 },
   { voce: 'Ulteriore detrazione cuneo fiscale', base: 'Reddito complessivo', formula: 'fino a 1.000 €, tra 20.000 e 40.000', fonte: FONTI.cuneoFiscale },
-  { voce: 'Addizionale regionale (Lombardia)', base: 'Imponibile fiscale', formula: '1,23% – 1,73% per scaglioni', fonte: FONTI.addizionaleRegionaleLombardia },
-  { voce: 'Addizionale comunale (Milano)', base: 'Imponibile fiscale', formula: '0,80%, soglia di esenzione 23.000 €', fonte: FONTI.addizionaleComunaleMilano },
+  { voce: 'Addizionale regionale', base: 'Imponibile fiscale', formula: 'variabile per regione: progressiva, flat, o soglia+flat', fonte: FONTI.addizionaliRegionali2026 },
+  { voce: 'Addizionale comunale', base: 'Imponibile fiscale', formula: 'variabile per comune: soglia di esenzione poi scaglioni', fonte: FONTI.addizionaliComunali2026 },
+  { voce: 'Detrazione coniuge a carico', base: 'Reddito complessivo', formula: 'da 800 € a 0, 3 fasce + micro-bonus', fonte: FONTI.tuirArt12 },
+  { voce: 'Detrazione figli 21-30 a carico', base: 'Reddito complessivo', formula: '950 € per figlio, rapporto su base 95.000 €+', fonte: FONTI.tuirArt12 },
+  { voce: 'Detrazione altri familiari a carico', base: 'Reddito complessivo', formula: '750 € per familiare, rapporto su base 80.000 €', fonte: FONTI.tuirArt12 },
   { voce: 'Trattamento integrativo', base: 'Reddito complessivo', formula: '1.200 € se ≤ 15.000 € e c\'è capienza', fonte: FONTI.trattamentoIntegrativo },
   { voce: 'Somma integrativa cuneo fiscale', base: 'Reddito di lavoro dipendente', formula: '7,1% / 5,3% / 4,8%, se reddito complessivo ≤ 20.000 €', fonte: FONTI.cuneoFiscale },
+  { voce: 'Welfare / fringe benefit', base: 'Valore ricevuto', formula: 'esente fino a 1.000-2.000 €, poi intero importo imponibile', fonte: FONTI.welfare },
   { voce: 'Contributi c/azienda', base: 'RAL', formula: '29,4% (terziario) o 32% (industria)', fonte: FONTI.inpsCirc6_2026 },
   { voce: 'TFR accantonato', base: 'RAL', formula: 'RAL / 13,5', fonte: FONTI.tfr },
 ]
@@ -117,7 +126,7 @@ const html = `<!doctype html>
   <p class="kicker">Jet HR — Product Builder, esercizio di selezione</p>
   <h1>Calcolatore RAL → Netto</h1>
   <p class="sub">Metodologia di calcolo, fonti normative e validazione</p>
-  <p class="meta">Anno d'imposta 2026 · Comune di Milano, Regione Lombardia<br>Documento generato automaticamente da fonti.ts e constants-2026.ts — ${OGGI}</p>
+  <p class="meta">Anno d'imposta 2026 · Caso di default: Milano, Lombardia — ogni variabile è personalizzabile<br>Documento generato automaticamente dai file sorgente del motore di calcolo — ${OGGI}</p>
 </section>
 
 <div class="page-break"></div>
@@ -133,23 +142,20 @@ codice sorgente e in questo documento — generato automaticamente dagli stessi 
 alimentano l'interfaccia, così che testo e codice non possano divergere.</p>
 
 <h2>2. Il caso standard</h2>
-<p>Le assunzioni indicate esplicitamente dal brief:</p>
+<p>Le assunzioni indicate esplicitamente dal brief restano il <strong>prefilled di
+default</strong>, ma ogni variabile che incide realmente sul netto è gestibile dall'utente:</p>
 <ul>
-  <li>Dipendente impiegato, contratto a tempo indeterminato</li>
-  <li>Residente a Milano</li>
+  <li>Dipendente impiegato, contratto a tempo indeterminato (selezionabile: apprendistato)</li>
+  <li>Residente a Milano, Lombardia (selezionabile: ${REGIONI_2026.length} regioni, ${COMUNI_2026.length} comuni + inserimento manuale)</li>
   <li>Nessuna agevolazione fiscale particolare</li>
+  <li>Nessun familiare fiscalmente a carico (selezionabile: coniuge, figli 21-30, altri familiari)</li>
+  <li>Nessun welfare/fringe benefit (selezionabile: importo annuo)</li>
+  <li>Mensilità di default: 13 — più universale di 14 tra i CCNL, senza un contratto specifico dichiarato (selezionabile: 12/13/14)</li>
+  <li>Contratto attivo per l'intero anno d'imposta, 365 giorni (selezionabile: 1-365)</li>
 </ul>
-<p>Assunzioni aggiuntive, necessarie a rendere il caso calcolabile e dichiarate qui invece
-che lasciate implicite nel codice:</p>
-<ul>
-  <li>Nessun familiare fiscalmente a carico</li>
-  <li>Nessun'altra fonte di reddito: imponibile fiscale, reddito di lavoro dipendente e
-  reddito complessivo coincidono. Il motore li tratta come concetti distinti — è nella
-  realtà che possono divergere, non nel caso standard qui coperto.</li>
-  <li>Contratto attivo per l'intero anno d'imposta (365 giorni)</li>
-  <li>Anno d'imposta 2026</li>
-  <li>Mensilità di default: 14 (parametro esposto e modificabile nella UI)</li>
-</ul>
+<p>Nessun'altra fonte di reddito: imponibile fiscale, reddito di lavoro dipendente e reddito
+complessivo coincidono nel caso di default. Il motore li tratta come concetti distinti — è
+nella realtà che possono divergere, non nel caso di default qui descritto. Anno d'imposta 2026.</p>
 
 <h2>3. Il modello di calcolo</h2>
 <p>Ogni passaggio della catena usa la base imponibile corretta — non tutte le voci si
@@ -218,15 +224,43 @@ ${TRATTAMENTO_INTEGRATIVO_2026.correttivoCapienza} €.</p>
 </table>
 
 <h3>Addizionali locali</h3>
+<p>Regione e comune sono selezionabili nella UI. Copertura: ${REGIONI_2026.length} regioni/province
+autonome (addizionale regionale) e ${COMUNI_2026.length} capoluoghi verificati singolarmente
+(addizionale comunale) — per un comune non elencato, la UI accetta aliquota e soglia inserite
+manualmente. Esempio, la combinazione di default (Lombardia / Milano):</p>
 <table>
   <thead><tr><th>Regionale (Lombardia)</th><th class="num">Aliquota</th></tr></thead>
   <tbody>
-    ${ADDIZIONALE_REGIONALE_LOMBARDIA_2026.map(
+    ${(REGIONI_2026.find((r) => r.id === 'lombardia')!.addizionale as { tipo: 'progressivo'; scaglioni: { da: number; a: number; aliquota: number }[] }).scaglioni.map(
       (s) => `<tr><td>${fmt(s.da)} – ${s.a === Infinity ? '—' : fmt(s.a) + ' €'}</td><td class="num">${(s.aliquota * 100).toFixed(2)}%</td></tr>`
     ).join('\n    ')}
-    <tr><td>Comunale (Milano)</td><td class="num">${(ADDIZIONALE_COMUNALE_MILANO_2026.aliquota * 100).toFixed(2)}% (esente fino a ${fmt(ADDIZIONALE_COMUNALE_MILANO_2026.sogliaEsenzione)} €)</td></tr>
   </tbody>
 </table>
+<table>
+  <thead><tr><th>Comunale (Milano)</th><th class="num">Aliquota</th></tr></thead>
+  <tbody>
+    <tr><td>Esente fino a ${fmt(COMUNI_2026.find((c) => c.id === 'milano')!.soglia)} €, poi</td><td class="num">${(COMUNI_2026.find((c) => c.id === 'milano')!.scaglioni[0].aliquota * 100).toFixed(2)}%</td></tr>
+  </tbody>
+</table>
+
+<h3>Detrazioni familiari (art. 12 TUIR)</h3>
+<table>
+  <tbody>
+    <tr><td>Coniuge a carico</td><td class="num">da ${fmt(DETRAZIONE_CONIUGE_2026.baseFasciaBassa)} € a 0, decrescente fino a ${fmt(DETRAZIONE_CONIUGE_2026.sogliaAlta)} € di reddito</td></tr>
+    <tr><td>Figli 21-30 non disabili a carico</td><td class="num">${fmt(DETRAZIONE_FIGLI_2026.importoBase)} € per figlio, base rapporto ${fmt(DETRAZIONE_FIGLI_2026.baseRapporto)} € (+${fmt(DETRAZIONE_FIGLI_2026.incrementoBasePerFiglioSuccessivo)} € per figlio successivo)</td></tr>
+    <tr><td>Altri familiari a carico</td><td class="num">${fmt(DETRAZIONE_ALTRI_FAMILIARI_2026.importoBase)} € per familiare, base rapporto ${fmt(DETRAZIONE_ALTRI_FAMILIARI_2026.baseRapporto)} €</td></tr>
+  </tbody>
+</table>
+
+<h3>Welfare / fringe benefit</h3>
+<p>Esente fino a ${fmt(WELFARE_2026.sogliaGenerale)} € (${fmt(WELFARE_2026.sogliaConFigliACarico)} € con figli a carico); se superata, l'intero
+importo — non solo l'eccedenza — diventa imponibile (soglia, non franchigia; verificato sulla
+circolare AdE 35/E del 2022).</p>
+
+<h3>Apprendistato</h3>
+<p>Aliquota INPS a carico del lavoratore: ${(ALIQUOTA_APPRENDISTATO_2026 * 100).toFixed(2)}% flat,
+indipendente dall'anno di apprendistato e dalla dimensione dell'azienda, in sostituzione
+dell'aliquota standard.</p>
 
 <h3>Costo azienda</h3>
 <table>
@@ -269,14 +303,14 @@ ${TRATTAMENTO_INTEGRATIVO_2026.correttivoCapienza} €.</p>
 <table>
   <thead><tr><th>Esclusione</th><th>Perché</th></tr></thead>
   <tbody>
-    <tr><td>Familiari a carico</td><td>Fuori dal caso standard indicato dal brief; introduce ulteriori detrazioni e soglie di reddito del familiare</td></tr>
-    <tr><td>Premi di risultato, welfare, fringe benefit</td><td>Regimi fiscali distinti (imposta sostitutiva 5-10%, soglie di esenzione) non applicabili al caso base</td></tr>
-    <tr><td>Addizionali di comuni diversi da Milano</td><td>Il calcolatore copre esplicitamente Milano, come richiesto</td></tr>
+    <tr><td>Tempo determinato come opzione a sé</td><td>Verificato — due volte, con fonti indipendenti — che non altera nessun numero rispetto al tempo indeterminato in questo modello: il floor differenziato dell'art. 13 TUIR non scatta mai, e il contributo NASpI 1,4% aggiuntivo è interamente a carico del datore. Un toggle che non cambia mai un numero sarebbe peggio di non averlo</td></tr>
+    <tr><td>Comuni oltre gli ${COMUNI_2026.length} capoluoghi verificati</td><td>Oltre 8.000 comuni italiani, nessun dataset bulk trovato sul sito del Dip. Finanze; copertura reale ma parziale, con inserimento manuale come fallback</td></tr>
+    <tr><td>Premi di risultato oltre il fringe benefit semplice</td><td>Regime a imposta sostitutiva 5-10%, soglie e requisiti di premialità distinti da modellare a parte</td></tr>
     <tr><td>Sterilizzazione delle detrazioni oltre 200.000 €</td><td>Irrilevante sotto quella soglia di reddito; il caso standard non la raggiunge</td></tr>
     <tr><td>INAIL nel costo azienda</td><td>Aliquota variabile per rischio di settore (tariffa specifica INAIL), non un parametro unico</td></tr>
     <tr><td>Ratei di 13ª/14ª con tassazione separata, conguaglio di fine anno</td><td>Riguardano la distribuzione infra-annuale, non la proiezione annuale richiesta</td></tr>
-    <tr><td>Part-time, contratti infra-annuali</td><td>Fuori dal caso standard "tempo indeterminato"; cambiano il rapporto tra reddito effettivo e teorico usato per la somma integrativa</td></tr>
     <tr><td>Massimale contributivo iscritti dal 1996 (${fmt(INPS_2026.massimaleAnnuo)} €)</td><td>Rilevante solo su RAL molto alte, oltre il range tipico del caso standard</td></tr>
+    <tr><td>Bonus +200€ per famiglie con più di 3 figli a carico (art. 12 c.1 lett. c TUIR)</td><td>Richiederebbe conoscere anche i figli under-21 coperti da assegno unico, non raccolti dal form</td></tr>
   </tbody>
 </table>
 

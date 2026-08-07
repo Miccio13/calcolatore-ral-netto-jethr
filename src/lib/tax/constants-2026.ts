@@ -19,6 +19,35 @@ export const DETRAZIONE_LAVORO_DIPENDENTE_2026 = {
   puntoIntermedio: 28_000,
 } as const
 
+export const DETRAZIONE_CONIUGE_2026 = {
+  sogliaBassa: 15_000,
+  sogliaMedia: 40_000,
+  sogliaAlta: 80_000,
+  baseFasciaBassa: 800,
+  coefficienteFasciaBassa: 110,
+  fisso: 690,
+  // Micro-bonus art. 12 c.1 lett. b): correttivi storici su fasce di reddito
+  // molto strette, aggiuntivi alla detrazione base.
+  microBonus: [
+    { da: 29_000, a: 29_200, importo: 10 },
+    { da: 29_200, a: 34_700, importo: 20 },
+    { da: 34_700, a: 35_000, importo: 30 },
+    { da: 35_000, a: 35_100, importo: 20 },
+    { da: 35_100, a: 35_200, importo: 10 },
+  ],
+} as const
+
+export const DETRAZIONE_FIGLI_2026 = {
+  importoBase: 950,
+  baseRapporto: 95_000,
+  incrementoBasePerFiglioSuccessivo: 15_000,
+} as const
+
+export const DETRAZIONE_ALTRI_FAMILIARI_2026 = {
+  importoBase: 750,
+  baseRapporto: 80_000,
+} as const
+
 export const CUNEO_FISCALE_2026 = {
   sommaIntegrativa: [
     { da: 0, a: 8_500, percentuale: 0.071 },
@@ -40,6 +69,8 @@ export const TRATTAMENTO_INTEGRATIVO_2026 = {
   correttivoCapienza: 75,
 } as const
 
+export const ALIQUOTA_APPRENDISTATO_2026 = 0.0584 as const
+
 export const INPS_2026 = {
   aliquotaBase: 0.0919,
   aliquotaConFis: 0.0949,
@@ -48,16 +79,12 @@ export const INPS_2026 = {
   massimaleAnnuo: 122_295,
 } as const
 
-export const ADDIZIONALE_REGIONALE_LOMBARDIA_2026 = [
-  { da: 0, a: 15_000, aliquota: 0.0123 },
-  { da: 15_000, a: 28_000, aliquota: 0.0158 },
-  { da: 28_000, a: 50_000, aliquota: 0.0172 },
-  { da: 50_000, a: Infinity, aliquota: 0.0173 },
-] as const
+// Le aliquote regionali e comunali sono in regioni-2026.ts e comuni-2026.ts,
+// non più fisse alla sola Lombardia/Milano.
 
-export const ADDIZIONALE_COMUNALE_MILANO_2026 = {
-  aliquota: 0.008,
-  sogliaEsenzione: 23_000,
+export const WELFARE_2026 = {
+  sogliaGenerale: 1_000,
+  sogliaConFigliACarico: 2_000,
 } as const
 
 export const COSTO_AZIENDA_2026 = {

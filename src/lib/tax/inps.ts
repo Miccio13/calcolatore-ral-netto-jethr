@@ -1,16 +1,48 @@
 import { formatNumero } from '../format'
-import { FONTI } from './fonti'
+import { FONTI, type Fonte } from './fonti'
 import { INPS_2026 } from './constants-2026'
 import { calcolaProgressivo } from './progressive'
-import type { AliquotaInps, VoceBreakdown } from './types'
+import type { VoceBreakdown } from './types'
+
+type OpzioniContributiInps = {
+  /**
+   * L'aliquota aggiuntiva dell'1% oltre la 1ª fascia pensionabile è prevista
+   * dalla circolare INPS 6/2026 per il regime contributivo standard. Per
+   * l'apprendistato (regime a sé, art. 1 c.773 L. 296/2006) non abbiamo una
+   * conferma che la stessa soglia si applichi identicamente: disattivata di
+   * default quando si passa un'aliquota diversa da quella standard, per non
+   * inventare un meccanismo non verificato.
+   */
+  applicaAliquotaAggiuntiva?: boolean
+  fonte?: Fonte
+}
 
 /**
  * Contributi previdenziali a carico del dipendente: aliquota base sulla RAL,
  * più 1% aggiuntivo sulla quota che eccede la 1ª fascia di retribuzione pensionabile
- * (56.224 € nel 2026). I contributi non concorrono a formare il reddito di lavoro
- * dipendente (art. 51 c.2 lett. a TUIR).
+ * (56.224 € nel 2026, solo regime standard). I contributi non concorrono a formare
+ * il reddito di lavoro dipendente (art. 51 c.2 lett. a TUIR).
  */
-export function calcolaContributiInps(ral: number, aliquotaBase: AliquotaInps): VoceBreakdown {
+export function calcolaContributiInps(
+  ral: number,
+  aliquotaBase: number,
+  opzioni: OpzioniContributiInps = {}
+): VoceBreakdown {
+  const { applicaAliquotaAggiuntiva = true, fonte = FONTI.inpsCirc6_2026 } = opzioni
+
+  if (!applicaAliquotaAggiuntiva) {
+    const importo = ral * aliquotaBase
+    return {
+      id: 'contributi-inps',
+      label: 'Contributi INPS a carico del dipendente',
+      importo,
+      segno: 'trattenuta',
+      percentualeRal: importo / ral,
+      formula: `${formatNumero(ral)} × ${(aliquotaBase * 100).toFixed(2)}% = ${importo.toFixed(2)}`,
+      fonte,
+    }
+  }
+
   const importo = calcolaProgressivo(ral, [
     { da: 0, a: INPS_2026.primaFasciaPensionabile, aliquota: aliquotaBase },
     { da: INPS_2026.primaFasciaPensionabile, a: Infinity, aliquota: aliquotaBase + INPS_2026.aliquotaAggiuntiva },
@@ -29,6 +61,6 @@ export function calcolaContributiInps(ral: number, aliquotaBase: AliquotaInps): 
     segno: 'trattenuta',
     percentualeRal: importo / ral,
     formula,
-    fonte: FONTI.inpsCirc6_2026,
+    fonte,
   }
 }

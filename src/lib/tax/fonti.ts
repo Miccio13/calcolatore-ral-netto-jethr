@@ -101,6 +101,22 @@ export const FONTI: Record<string, Fonte> = {
     url: 'https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/addregirpef/addregirpef.php?reg=10',
     tipo: 'atto-locale',
   },
+  addizionaliRegionali2026: {
+    id: 'addizionaliRegionali2026',
+    norma: 'Leggi regionali 2025/2026 di ciascuna regione, art. 6 D.Lgs. 68/2011, art. 50 D.Lgs. 446/1997',
+    descrizione:
+      'Addizionale regionale IRPEF di tutte le regioni e province autonome italiane (escl. Lombardia, con fonte propria), aliquote pubblicate dal Dipartimento delle Finanze tra gennaio e maggio 2026. Le regioni che differenziano l\'aliquota per scaglione seguono lo stesso meccanismo marginale dell\'IRPEF nazionale (art. 6 D.Lgs. 68/2011): il dettaglio comma per comma di ciascuna legge regionale non è stato riletto singolarmente, solo la tabella aliquote/scaglioni pubblicata dal Dip. Finanze.',
+    url: 'https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/addregirpef/sceltaregione.htm',
+    tipo: 'atto-locale',
+  },
+  addizionaliComunali2026: {
+    id: 'addizionaliComunali2026',
+    norma: 'Delibere comunali 2025/2026, art. 1 c.142-143 L. 296/2006',
+    descrizione:
+      'Addizionale comunale IRPEF di 11 capoluoghi (Milano, Roma, Napoli, Torino, Genova, Bologna, Firenze, Palermo, Bari, Venezia, Cagliari), ciascuno verificato singolarmente sul tool di ricerca del Dipartimento delle Finanze con il codice catastale del comune. Copertura parziale e dichiarata: l\'Italia ha oltre 8.000 comuni, nessun dataset bulk scaricabile è stato trovato sul sito del Dip. Finanze — per i comuni non elencati il calcolatore offre l\'inserimento manuale di aliquota e soglia.',
+    url: 'https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/nuova_addcomirpef/sceltaregione.htm',
+    tipo: 'atto-locale',
+  },
   addizionaleComunaleMilano: {
     id: 'addizionaleComunaleMilano',
     norma: 'Delibera Comune di Milano n. 46 del 28/09/2020',
@@ -115,6 +131,30 @@ export const FONTI: Record<string, Fonte> = {
     descrizione:
       'Minimali e massimali contributivi 2026: prima fascia di retribuzione pensionabile a 56.224 €, oltre la quale si applica l\'aliquota aggiuntiva IVS dell\'1%; massimale annuo 122.295 € per gli iscritti dal 1996.',
     url: 'https://www.inps.it/it/it/inps-comunica/atti/circolari-messaggi-e-normativa/dettaglio.circolari-e-messaggi.2026.01.circolare-numero-6-del-30-01-2026_15151.html',
+    tipo: 'prassi',
+  },
+  tuirArt12: {
+    id: 'tuirArt12',
+    norma: 'art. 12 TUIR (d.P.R. 917/1986)',
+    descrizione:
+      'Detrazioni per carichi di famiglia: coniuge a carico (c.1 lett. a-b), figli a carico (c.1 lett. c — per gli under 21 sostituita dall\'assegno unico universale, D.Lgs. 230/2021), altri familiari a carico (c.1 lett. d).',
+    url: 'https://www.agenziaentrate.gov.it/portale/documents/20143/255456/Articolo+12+del+Dpr+917_1986_articolo_12_Tuir.pdf/7224c483-95a6-f2b3-a2be-68fdf30c5b54',
+    tipo: 'norma',
+  },
+  welfare: {
+    id: 'welfare',
+    norma: 'art. 51 c.3 TUIR; L. 207/2024; circ. Agenzia Entrate n. 35/E del 04/11/2022',
+    descrizione:
+      'Fringe benefit fino a 1.000 € (2.000 € con figli a carico) non concorrono al reddito di lavoro dipendente. Se il valore complessivo supera la soglia, l\'intero importo diventa imponibile — non solo l\'eccedenza (soglia, non franchigia; principio confermato dalla circolare 35/E anche per le soglie di annualità precedenti).',
+    url: 'https://www.agenziaentrate.gov.it/portale/documents/20143/4785312/circolare_welfare_aziendale_+n.+35+del+4+novembre+2022+.pdf/657de91b-6e75-2330-ce10-450e5f7a561b',
+    tipo: 'prassi',
+  },
+  apprendistato: {
+    id: 'apprendistato',
+    norma: 'art. 1 c.773 L. 296/2006; msg. INPS n. 3618 del 17/10/2023',
+    descrizione:
+      'Aliquota contributiva a carico del lavoratore apprendista: 5,84% flat, indipendente dall\'anno di apprendistato e dalla dimensione dell\'azienda (a differenza degli sgravi a carico del datore, quelli sì variabili per azienda). Confermata su tre fonti secondarie indipendenti con la stessa cifra; il fetch diretto del testo integrale dell\'art. 1 L. 296/2006 (1.364 commi) non è riuscito tecnicamente in fase di ricerca — da rileggere sulla fonte primaria appena possibile.',
+    url: 'https://www.inps.it/it/it/inps-comunica/atti/circolari-messaggi-e-normativa/dettaglio.circolari-e-messaggi.2023.10.messaggio-numero-3618-del-17-10-2023_14297.html',
     tipo: 'prassi',
   },
   tfr: {

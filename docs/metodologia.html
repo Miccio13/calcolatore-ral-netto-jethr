@@ -41,7 +41,7 @@
   <p class="kicker">Jet HR — Product Builder, esercizio di selezione</p>
   <h1>Calcolatore RAL → Netto</h1>
   <p class="sub">Metodologia di calcolo, fonti normative e validazione</p>
-  <p class="meta">Anno d'imposta 2026 · Comune di Milano, Regione Lombardia<br>Documento generato automaticamente da fonti.ts e constants-2026.ts — 7 agosto 2026</p>
+  <p class="meta">Anno d'imposta 2026 · Caso di default: Milano, Lombardia — ogni variabile è personalizzabile<br>Documento generato automaticamente dai file sorgente del motore di calcolo — 7 agosto 2026</p>
 </section>
 
 <div class="page-break"></div>
@@ -57,23 +57,20 @@ codice sorgente e in questo documento — generato automaticamente dagli stessi 
 alimentano l'interfaccia, così che testo e codice non possano divergere.</p>
 
 <h2>2. Il caso standard</h2>
-<p>Le assunzioni indicate esplicitamente dal brief:</p>
+<p>Le assunzioni indicate esplicitamente dal brief restano il <strong>prefilled di
+default</strong>, ma ogni variabile che incide realmente sul netto è gestibile dall'utente:</p>
 <ul>
-  <li>Dipendente impiegato, contratto a tempo indeterminato</li>
-  <li>Residente a Milano</li>
+  <li>Dipendente impiegato, contratto a tempo indeterminato (selezionabile: apprendistato)</li>
+  <li>Residente a Milano, Lombardia (selezionabile: 21 regioni, 11 comuni + inserimento manuale)</li>
   <li>Nessuna agevolazione fiscale particolare</li>
+  <li>Nessun familiare fiscalmente a carico (selezionabile: coniuge, figli 21-30, altri familiari)</li>
+  <li>Nessun welfare/fringe benefit (selezionabile: importo annuo)</li>
+  <li>Mensilità di default: 13 — più universale di 14 tra i CCNL, senza un contratto specifico dichiarato (selezionabile: 12/13/14)</li>
+  <li>Contratto attivo per l'intero anno d'imposta, 365 giorni (selezionabile: 1-365)</li>
 </ul>
-<p>Assunzioni aggiuntive, necessarie a rendere il caso calcolabile e dichiarate qui invece
-che lasciate implicite nel codice:</p>
-<ul>
-  <li>Nessun familiare fiscalmente a carico</li>
-  <li>Nessun'altra fonte di reddito: imponibile fiscale, reddito di lavoro dipendente e
-  reddito complessivo coincidono. Il motore li tratta come concetti distinti — è nella
-  realtà che possono divergere, non nel caso standard qui coperto.</li>
-  <li>Contratto attivo per l'intero anno d'imposta (365 giorni)</li>
-  <li>Anno d'imposta 2026</li>
-  <li>Mensilità di default: 14 (parametro esposto e modificabile nella UI)</li>
-</ul>
+<p>Nessun'altra fonte di reddito: imponibile fiscale, reddito di lavoro dipendente e reddito
+complessivo coincidono nel caso di default. Il motore li tratta come concetti distinti — è
+nella realtà che possono divergere, non nel caso di default qui descritto. Anno d'imposta 2026.</p>
 
 <h2>3. Il modello di calcolo</h2>
 <p>Ogni passaggio della catena usa la base imponibile corretta — non tutte le voci si
@@ -85,10 +82,14 @@ calcolano sulla RAL:</p>
     <tr><td>IRPEF lorda</td><td>Imponibile fiscale</td><td>23% / 33% / 43% per scaglioni</td><td>art. 11 TUIR (d.P.R. 917/1986)</td></tr>
     <tr><td>Detrazione lavoro dipendente</td><td>Reddito di riferimento</td><td>da 1.955 € a 0, decrescente da 15.000 a 50.000</td><td>art. 13 c.1 e c.6-bis TUIR</td></tr>
     <tr><td>Ulteriore detrazione cuneo fiscale</td><td>Reddito complessivo</td><td>fino a 1.000 €, tra 20.000 e 40.000</td><td>L. 207/2024 art. 1 c.4-6</td></tr>
-    <tr><td>Addizionale regionale (Lombardia)</td><td>Imponibile fiscale</td><td>1,23% – 1,73% per scaglioni</td><td>art. 72 c.1 L.R. Lombardia 14/07/2003 n. 10</td></tr>
-    <tr><td>Addizionale comunale (Milano)</td><td>Imponibile fiscale</td><td>0,80%, soglia di esenzione 23.000 €</td><td>Delibera Comune di Milano n. 46 del 28/09/2020</td></tr>
+    <tr><td>Addizionale regionale</td><td>Imponibile fiscale</td><td>variabile per regione: progressiva, flat, o soglia+flat</td><td>Leggi regionali 2025/2026 di ciascuna regione, art. 6 D.Lgs. 68/2011, art. 50 D.Lgs. 446/1997</td></tr>
+    <tr><td>Addizionale comunale</td><td>Imponibile fiscale</td><td>variabile per comune: soglia di esenzione poi scaglioni</td><td>Delibere comunali 2025/2026, art. 1 c.142-143 L. 296/2006</td></tr>
+    <tr><td>Detrazione coniuge a carico</td><td>Reddito complessivo</td><td>da 800 € a 0, 3 fasce + micro-bonus</td><td>art. 12 TUIR (d.P.R. 917/1986)</td></tr>
+    <tr><td>Detrazione figli 21-30 a carico</td><td>Reddito complessivo</td><td>950 € per figlio, rapporto su base 95.000 €+</td><td>art. 12 TUIR (d.P.R. 917/1986)</td></tr>
+    <tr><td>Detrazione altri familiari a carico</td><td>Reddito complessivo</td><td>750 € per familiare, rapporto su base 80.000 €</td><td>art. 12 TUIR (d.P.R. 917/1986)</td></tr>
     <tr><td>Trattamento integrativo</td><td>Reddito complessivo</td><td>1.200 € se ≤ 15.000 € e c'è capienza</td><td>D.L. 3/2020 conv. L. 21/2020, art. 1 c.1, come modificato da L. 207/2024 art. 1 c.3</td></tr>
     <tr><td>Somma integrativa cuneo fiscale</td><td>Reddito di lavoro dipendente</td><td>7,1% / 5,3% / 4,8%, se reddito complessivo ≤ 20.000 €</td><td>L. 207/2024 art. 1 c.4-6</td></tr>
+    <tr><td>Welfare / fringe benefit</td><td>Valore ricevuto</td><td>esente fino a 1.000-2.000 €, poi intero importo imponibile</td><td>art. 51 c.3 TUIR; L. 207/2024; circ. Agenzia Entrate n. 35/E del 04/11/2022</td></tr>
     <tr><td>Contributi c/azienda</td><td>RAL</td><td>29,4% (terziario) o 32% (industria)</td><td>Circolare INPS n. 6 del 30/01/2026</td></tr>
     <tr><td>TFR accantonato</td><td>RAL</td><td>RAL / 13,5</td><td>art. 2120 c.c.</td></tr>
   </tbody>
@@ -149,6 +150,10 @@ sui redditi di lavoro dipendente superiore alla detrazione art. 13 ridotta di
 </table>
 
 <h3>Addizionali locali</h3>
+<p>Regione e comune sono selezionabili nella UI. Copertura: 21 regioni/province
+autonome (addizionale regionale) e 11 capoluoghi verificati singolarmente
+(addizionale comunale) — per un comune non elencato, la UI accetta aliquota e soglia inserite
+manualmente. Esempio, la combinazione di default (Lombardia / Milano):</p>
 <table>
   <thead><tr><th>Regionale (Lombardia)</th><th class="num">Aliquota</th></tr></thead>
   <tbody>
@@ -156,9 +161,33 @@ sui redditi di lavoro dipendente superiore alla detrazione art. 13 ridotta di
     <tr><td>15.000 – 28.000 €</td><td class="num">1.58%</td></tr>
     <tr><td>28.000 – 50.000 €</td><td class="num">1.72%</td></tr>
     <tr><td>50.000 – —</td><td class="num">1.73%</td></tr>
-    <tr><td>Comunale (Milano)</td><td class="num">0.80% (esente fino a 23.000 €)</td></tr>
   </tbody>
 </table>
+<table>
+  <thead><tr><th>Comunale (Milano)</th><th class="num">Aliquota</th></tr></thead>
+  <tbody>
+    <tr><td>Esente fino a 23.000 €, poi</td><td class="num">0.80%</td></tr>
+  </tbody>
+</table>
+
+<h3>Detrazioni familiari (art. 12 TUIR)</h3>
+<table>
+  <tbody>
+    <tr><td>Coniuge a carico</td><td class="num">da 800 € a 0, decrescente fino a 80.000 € di reddito</td></tr>
+    <tr><td>Figli 21-30 non disabili a carico</td><td class="num">950 € per figlio, base rapporto 95.000 € (+15.000 € per figlio successivo)</td></tr>
+    <tr><td>Altri familiari a carico</td><td class="num">750 € per familiare, base rapporto 80.000 €</td></tr>
+  </tbody>
+</table>
+
+<h3>Welfare / fringe benefit</h3>
+<p>Esente fino a 1.000 € (2.000 € con figli a carico); se superata, l'intero
+importo — non solo l'eccedenza — diventa imponibile (soglia, non franchigia; verificato sulla
+circolare AdE 35/E del 2022).</p>
+
+<h3>Apprendistato</h3>
+<p>Aliquota INPS a carico del lavoratore: 5.84% flat,
+indipendente dall'anno di apprendistato e dalla dimensione dell'azienda, in sostituzione
+dell'aliquota standard.</p>
 
 <h3>Costo azienda</h3>
 <table>
@@ -201,14 +230,14 @@ sui redditi di lavoro dipendente superiore alla detrazione art. 13 ridotta di
 <table>
   <thead><tr><th>Esclusione</th><th>Perché</th></tr></thead>
   <tbody>
-    <tr><td>Familiari a carico</td><td>Fuori dal caso standard indicato dal brief; introduce ulteriori detrazioni e soglie di reddito del familiare</td></tr>
-    <tr><td>Premi di risultato, welfare, fringe benefit</td><td>Regimi fiscali distinti (imposta sostitutiva 5-10%, soglie di esenzione) non applicabili al caso base</td></tr>
-    <tr><td>Addizionali di comuni diversi da Milano</td><td>Il calcolatore copre esplicitamente Milano, come richiesto</td></tr>
+    <tr><td>Tempo determinato come opzione a sé</td><td>Verificato — due volte, con fonti indipendenti — che non altera nessun numero rispetto al tempo indeterminato in questo modello: il floor differenziato dell'art. 13 TUIR non scatta mai, e il contributo NASpI 1,4% aggiuntivo è interamente a carico del datore. Un toggle che non cambia mai un numero sarebbe peggio di non averlo</td></tr>
+    <tr><td>Comuni oltre gli 11 capoluoghi verificati</td><td>Oltre 8.000 comuni italiani, nessun dataset bulk trovato sul sito del Dip. Finanze; copertura reale ma parziale, con inserimento manuale come fallback</td></tr>
+    <tr><td>Premi di risultato oltre il fringe benefit semplice</td><td>Regime a imposta sostitutiva 5-10%, soglie e requisiti di premialità distinti da modellare a parte</td></tr>
     <tr><td>Sterilizzazione delle detrazioni oltre 200.000 €</td><td>Irrilevante sotto quella soglia di reddito; il caso standard non la raggiunge</td></tr>
     <tr><td>INAIL nel costo azienda</td><td>Aliquota variabile per rischio di settore (tariffa specifica INAIL), non un parametro unico</td></tr>
     <tr><td>Ratei di 13ª/14ª con tassazione separata, conguaglio di fine anno</td><td>Riguardano la distribuzione infra-annuale, non la proiezione annuale richiesta</td></tr>
-    <tr><td>Part-time, contratti infra-annuali</td><td>Fuori dal caso standard "tempo indeterminato"; cambiano il rapporto tra reddito effettivo e teorico usato per la somma integrativa</td></tr>
     <tr><td>Massimale contributivo iscritti dal 1996 (122.295 €)</td><td>Rilevante solo su RAL molto alte, oltre il range tipico del caso standard</td></tr>
+    <tr><td>Bonus +200€ per famiglie con più di 3 figli a carico (art. 12 c.1 lett. c TUIR)</td><td>Richiederebbe conoscere anche i figli under-21 coperti da assegno unico, non raccolti dal form</td></tr>
   </tbody>
 </table>
 
@@ -242,8 +271,13 @@ Consultate il 7 agosto 2026.</p>
     <tr><td><span class="badge">Prassi</span></td><td>Circolare Agenzia delle Entrate n. 4/E del 16/05/2025</td><td>Istruzioni operative su IRPEF e tassazione dei redditi di lavoro dipendente dopo la legge di bilancio 2025: tabelle di scaglioni e detrazioni, esempi di calcolo della somma integrativa.<br><span class="fonte-url">https://www.agenziaentrate.gov.it/portale/documents/20143/8410823/Circolare+lavoro+dipendente+LB2025+DD+IRPEF+n.+4+del+16+maggio+2025.pdf/36979eaa-9fc5-a4ec-a7aa-136497c53f91</span></td></tr>
     <tr><td><span class="badge">Norma</span></td><td>art. 51 c.2 lett. a) TUIR</td><td>I contributi previdenziali e assistenziali obbligatori versati dal datore di lavoro e dal lavoratore non concorrono a formare il reddito di lavoro dipendente.<br><span class="fonte-url">https://www.agenziaentrate.gov.it/portale/schede/comunicazioni/dati-relativi-ai-contributi-previdenziali-dal-2015-/normativa-daticontributiprevidenzialidal2015</span></td></tr>
     <tr><td><span class="badge">Atto locale</span></td><td>art. 72 c.1 L.R. Lombardia 14/07/2003 n. 10</td><td>Addizionale regionale IRPEF della Lombardia, a scaglioni progressivi (1,23% - 1,73%), aliquote pubblicate dal Dipartimento delle Finanze il 28/01/2026.<br><span class="fonte-url">https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/addregirpef/addregirpef.php?reg=10</span></td></tr>
+    <tr><td><span class="badge">Atto locale</span></td><td>Leggi regionali 2025/2026 di ciascuna regione, art. 6 D.Lgs. 68/2011, art. 50 D.Lgs. 446/1997</td><td>Addizionale regionale IRPEF di tutte le regioni e province autonome italiane (escl. Lombardia, con fonte propria), aliquote pubblicate dal Dipartimento delle Finanze tra gennaio e maggio 2026. Le regioni che differenziano l'aliquota per scaglione seguono lo stesso meccanismo marginale dell'IRPEF nazionale (art. 6 D.Lgs. 68/2011): il dettaglio comma per comma di ciascuna legge regionale non è stato riletto singolarmente, solo la tabella aliquote/scaglioni pubblicata dal Dip. Finanze.<br><span class="fonte-url">https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/addregirpef/sceltaregione.htm</span></td></tr>
+    <tr><td><span class="badge">Atto locale</span></td><td>Delibere comunali 2025/2026, art. 1 c.142-143 L. 296/2006</td><td>Addizionale comunale IRPEF di 11 capoluoghi (Milano, Roma, Napoli, Torino, Genova, Bologna, Firenze, Palermo, Bari, Venezia, Cagliari), ciascuno verificato singolarmente sul tool di ricerca del Dipartimento delle Finanze con il codice catastale del comune. Copertura parziale e dichiarata: l'Italia ha oltre 8.000 comuni, nessun dataset bulk scaricabile è stato trovato sul sito del Dip. Finanze — per i comuni non elencati il calcolatore offre l'inserimento manuale di aliquota e soglia.<br><span class="fonte-url">https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/nuova_addcomirpef/sceltaregione.htm</span></td></tr>
     <tr><td><span class="badge">Atto locale</span></td><td>Delibera Comune di Milano n. 46 del 28/09/2020</td><td>Addizionale comunale IRPEF di Milano: aliquota unica 0,80%, con esenzione totale (soglia, non franchigia) per reddito imponibile fino a 23.000 €.<br><span class="fonte-url">https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/nuova_addcomirpef/risultato.htm?anno=9999&pr=MI&cc=F205&r=1</span></td></tr>
     <tr><td><span class="badge">Prassi</span></td><td>Circolare INPS n. 6 del 30/01/2026</td><td>Minimali e massimali contributivi 2026: prima fascia di retribuzione pensionabile a 56.224 €, oltre la quale si applica l'aliquota aggiuntiva IVS dell'1%; massimale annuo 122.295 € per gli iscritti dal 1996.<br><span class="fonte-url">https://www.inps.it/it/it/inps-comunica/atti/circolari-messaggi-e-normativa/dettaglio.circolari-e-messaggi.2026.01.circolare-numero-6-del-30-01-2026_15151.html</span></td></tr>
+    <tr><td><span class="badge">Norma</span></td><td>art. 12 TUIR (d.P.R. 917/1986)</td><td>Detrazioni per carichi di famiglia: coniuge a carico (c.1 lett. a-b), figli a carico (c.1 lett. c — per gli under 21 sostituita dall'assegno unico universale, D.Lgs. 230/2021), altri familiari a carico (c.1 lett. d).<br><span class="fonte-url">https://www.agenziaentrate.gov.it/portale/documents/20143/255456/Articolo+12+del+Dpr+917_1986_articolo_12_Tuir.pdf/7224c483-95a6-f2b3-a2be-68fdf30c5b54</span></td></tr>
+    <tr><td><span class="badge">Prassi</span></td><td>art. 51 c.3 TUIR; L. 207/2024; circ. Agenzia Entrate n. 35/E del 04/11/2022</td><td>Fringe benefit fino a 1.000 € (2.000 € con figli a carico) non concorrono al reddito di lavoro dipendente. Se il valore complessivo supera la soglia, l'intero importo diventa imponibile — non solo l'eccedenza (soglia, non franchigia; principio confermato dalla circolare 35/E anche per le soglie di annualità precedenti).<br><span class="fonte-url">https://www.agenziaentrate.gov.it/portale/documents/20143/4785312/circolare_welfare_aziendale_+n.+35+del+4+novembre+2022+.pdf/657de91b-6e75-2330-ce10-450e5f7a561b</span></td></tr>
+    <tr><td><span class="badge">Prassi</span></td><td>art. 1 c.773 L. 296/2006; msg. INPS n. 3618 del 17/10/2023</td><td>Aliquota contributiva a carico del lavoratore apprendista: 5,84% flat, indipendente dall'anno di apprendistato e dalla dimensione dell'azienda (a differenza degli sgravi a carico del datore, quelli sì variabili per azienda). Confermata su tre fonti secondarie indipendenti con la stessa cifra; il fetch diretto del testo integrale dell'art. 1 L. 296/2006 (1.364 commi) non è riuscito tecnicamente in fase di ricerca — da rileggere sulla fonte primaria appena possibile.<br><span class="fonte-url">https://www.inps.it/it/it/inps-comunica/atti/circolari-messaggi-e-normativa/dettaglio.circolari-e-messaggi.2023.10.messaggio-numero-3618-del-17-10-2023_14297.html</span></td></tr>
     <tr><td><span class="badge">Norma</span></td><td>art. 2120 c.c.</td><td>Il trattamento di fine rapporto si accantona nella misura della retribuzione annua divisa per 13,5 (al netto della rivalutazione).<br><span class="fonte-url">https://www.normattiva.it/uri-res/N2Ls?urn%3Anir%3Astato%3Acodice.civile%3A1942-03-16%3B262~art2120=</span></td></tr>
   </tbody>
 </table>

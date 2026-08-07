@@ -30,6 +30,18 @@ describe('calcolaDetrazioneLavoroDipendente', () => {
     expect(calcolaDetrazioneLavoroDipendente(50_000).importo).toBeCloseTo(0, 6)
     expect(calcolaDetrazioneLavoroDipendente(80_000).importo).toBe(0)
   })
+
+  it('il floor di 690€ (art. 13 c.1 lett. a) TUIR) è cablato esplicitamente, anche se in questo scaglione è un no-op numerico (1.955 > 690)', () => {
+    const r = calcolaDetrazioneLavoroDipendente(10_000)
+    expect(r.importo).toBeGreaterThanOrEqual(690)
+    expect(r.formula).toMatch(/690/)
+  })
+
+  it('il floor sale a 1.380€ per tempo determinato, comunque no-op nello scaglione ≤15.000', () => {
+    const r = calcolaDetrazioneLavoroDipendente(10_000, { tempoDeterminato: true })
+    expect(r.importo).toBeCloseTo(1955, 6)
+    expect(r.formula).toMatch(/1\.380/)
+  })
 })
 
 describe('calcolaUlterioreDetrazione', () => {
