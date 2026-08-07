@@ -10,8 +10,14 @@ const nextConfig: NextConfig = {
   // Vercel: i rewrite verso un'origine esterna non instradano bene i path
   // /_next annidati). Con assetPrefix assoluto, gli asset vengono richiesti
   // DIRETTAMENTE dal dominio di questa app, bypassando il rewrite.
+  //
+  // IMPORTANTE: assetPrefix e basePath NON si combinano automaticamente —
+  // verificato in produzione (404 su tutti i chunk con solo il dominio bare).
+  // I file sono serviti sotto /AI-builder-jethr/_next/... (basePath sposta
+  // anche il file serving), quindi assetPrefix deve includere lo stesso
+  // prefisso esplicitamente.
   basePath: '/AI-builder-jethr',
-  assetPrefix: 'https://calcolatore-ral-netto-jethr.vercel.app',
+  assetPrefix: 'https://calcolatore-ral-netto-jethr.vercel.app/AI-builder-jethr',
   turbopack: {
     root: path.resolve(__dirname),
   },
