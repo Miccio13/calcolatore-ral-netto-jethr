@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Jet HR — Calcolatore RAL → Netto: metodologia</title>
+<style>
+  @page { size: A4; margin: 22mm 18mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Wix Madefor Display', -apple-system, 'Segoe UI', Arial, sans-serif;
+    color: #11150a;
+    font-size: 10.5pt;
+    line-height: 1.55;
+  }
+  h1 { font-size: 22pt; margin: 0 0 4pt; }
+  h2 { font-size: 14pt; margin: 26pt 0 8pt; border-bottom: 2px solid #dbe6bd; padding-bottom: 4pt; page-break-after: avoid; }
+  h3 { font-size: 11.5pt; margin: 14pt 0 6pt; page-break-after: avoid; }
+  p { margin: 0 0 8pt; }
+  .cover { text-align: center; padding-top: 60pt; }
+  .cover .kicker { color: #6b6f61; font-size: 10pt; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10pt; }
+  .cover .sub { color: #6b6f61; margin-top: 8pt; font-size: 11pt; }
+  .cover .meta { margin-top: 40pt; font-size: 9.5pt; color: #6b6f61; }
+  .badge { display: inline-block; background: #e6efd9; color: #345216; border-radius: 999px; padding: 2pt 8pt; font-size: 8.5pt; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; margin: 8pt 0 14pt; font-size: 9.3pt; }
+  th, td { text-align: left; padding: 5pt 7pt; border-bottom: 1px solid #e6e4d9; vertical-align: top; }
+  th { background: #eef3e2; font-weight: 600; font-size: 8.8pt; text-transform: uppercase; letter-spacing: 0.02em; color: #345216; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .fonte-url { font-size: 8.3pt; color: #6b6f61; word-break: break-all; }
+  ol, ul { margin: 0 0 10pt; padding-left: 18pt; }
+  li { margin-bottom: 6pt; }
+  .box { background: #f8f7f2; border: 1px solid #e6e4d9; border-radius: 8pt; padding: 10pt 12pt; margin: 8pt 0 14pt; }
+  .ok { color: #345216; font-weight: 600; }
+  .page-break { page-break-before: always; }
+  footer.pagefoot { position: fixed; bottom: 8mm; font-size: 8pt; color: #999; }
+  code { font-family: 'SF Mono', Menlo, monospace; font-size: 9pt; background: #eef3e2; padding: 1pt 4pt; border-radius: 3pt; }
+</style>
+</head>
+<body>
+
+<section class="cover">
+  <p class="kicker">Jet HR — Product Builder, esercizio di selezione</p>
+  <h1>Calcolatore RAL → Netto</h1>
+  <p class="sub">Metodologia di calcolo, fonti normative e validazione</p>
+  <p class="meta">Anno d'imposta 2026 · Comune di Milano, Regione Lombardia<br>Documento generato automaticamente da fonti.ts e constants-2026.ts — 7 agosto 2026</p>
+</section>
+
+<div class="page-break"></div>
+
+<h2>1. Sintesi</h2>
+<p>Questo documento accompagna un prototipo che, data una Retribuzione Annua Lorda (RAL),
+calcola il netto annuo e mensile percepito da un dipendente e tutte le voci di tassazione
+e contribuzione al lordo. Copre un solo caso — descritto sotto — con ogni semplificazione
+dichiarata esplicitamente, non nascosta nel codice.</p>
+<p>Il motore di calcolo (<code>src/lib/tax/</code>) è indipendente dalla UI: ogni voce del
+risultato porta con sé la formula applicata e la norma che la impone, verificabile nel
+codice sorgente e in questo documento — generato automaticamente dagli stessi file che
+alimentano l'interfaccia, così che testo e codice non possano divergere.</p>
+
+<h2>2. Il caso standard</h2>
+<p>Le assunzioni indicate esplicitamente dal brief:</p>
+<ul>
+  <li>Dipendente impiegato, contratto a tempo indeterminato</li>
+  <li>Residente a Milano</li>
+  <li>Nessuna agevolazione fiscale particolare</li>
+</ul>
+<p>Assunzioni aggiuntive, necessarie a rendere il caso calcolabile e dichiarate qui invece
+che lasciate implicite nel codice:</p>
+<ul>
+  <li>Nessun familiare fiscalmente a carico</li>
+  <li>Nessun'altra fonte di reddito: imponibile fiscale, reddito di lavoro dipendente e
+  reddito complessivo coincidono. Il motore li tratta come concetti distinti — è nella
+  realtà che possono divergere, non nel caso standard qui coperto.</li>
+  <li>Contratto attivo per l'intero anno d'imposta (365 giorni)</li>
+  <li>Anno d'imposta 2026</li>
+  <li>Mensilità di default: 14 (parametro esposto e modificabile nella UI)</li>
+</ul>
+
+<h2>3. Il modello di calcolo</h2>
+<p>Ogni passaggio della catena usa la base imponibile corretta — non tutte le voci si
+calcolano sulla RAL:</p>
+<table>
+  <thead><tr><th>Voce</th><th>Base imponibile</th><th>Formula</th><th>Norma</th></tr></thead>
+  <tbody>
+    <tr><td>Contributi INPS c/dipendente</td><td>RAL</td><td>9,19% (o 9,49%) + 1% oltre 56.224 €</td><td>Circolare INPS n. 6 del 30/01/2026</td></tr>
+    <tr><td>IRPEF lorda</td><td>Imponibile fiscale</td><td>23% / 33% / 43% per scaglioni</td><td>art. 11 TUIR (d.P.R. 917/1986)</td></tr>
+    <tr><td>Detrazione lavoro dipendente</td><td>Reddito di riferimento</td><td>da 1.955 € a 0, decrescente da 15.000 a 50.000</td><td>art. 13 c.1 e c.6-bis TUIR</td></tr>
+    <tr><td>Ulteriore detrazione cuneo fiscale</td><td>Reddito complessivo</td><td>fino a 1.000 €, tra 20.000 e 40.000</td><td>L. 207/2024 art. 1 c.4-6</td></tr>
+    <tr><td>Addizionale regionale (Lombardia)</td><td>Imponibile fiscale</td><td>1,23% – 1,73% per scaglioni</td><td>art. 72 c.1 L.R. Lombardia 14/07/2003 n. 10</td></tr>
+    <tr><td>Addizionale comunale (Milano)</td><td>Imponibile fiscale</td><td>0,80%, soglia di esenzione 23.000 €</td><td>Delibera Comune di Milano n. 46 del 28/09/2020</td></tr>
+    <tr><td>Trattamento integrativo</td><td>Reddito complessivo</td><td>1.200 € se ≤ 15.000 € e c'è capienza</td><td>D.L. 3/2020 conv. L. 21/2020, art. 1 c.1, come modificato da L. 207/2024 art. 1 c.3</td></tr>
+    <tr><td>Somma integrativa cuneo fiscale</td><td>Reddito di lavoro dipendente</td><td>7,1% / 5,3% / 4,8%, se reddito complessivo ≤ 20.000 €</td><td>L. 207/2024 art. 1 c.4-6</td></tr>
+    <tr><td>Contributi c/azienda</td><td>RAL</td><td>29,4% (terziario) o 32% (industria)</td><td>Circolare INPS n. 6 del 30/01/2026</td></tr>
+    <tr><td>TFR accantonato</td><td>RAL</td><td>RAL / 13,5</td><td>art. 2120 c.c.</td></tr>
+  </tbody>
+</table>
+<p>Trattamento integrativo e somma integrativa <strong>si sommano</strong> al netto: non
+sono detrazioni, sono credito erogato in busta paga.</p>
+
+<h2>4. Parametri 2026</h2>
+<h3>Scaglioni IRPEF</h3>
+<table>
+  <thead><tr><th>Da</th><th>A</th><th class="num">Aliquota</th></tr></thead>
+  <tbody>
+    <tr><td>0 €</td><td>28.000 €</td><td class="num">23%</td></tr>
+    <tr><td>28.000 €</td><td>50.000 €</td><td class="num">33%</td></tr>
+    <tr><td>50.000 €</td><td>—</td><td class="num">43%</td></tr>
+  </tbody>
+</table>
+
+<h3>Detrazione lavoro dipendente (art. 13 c.1 TUIR)</h3>
+<table>
+  <tbody>
+    <tr><td>Fino a 15.000 €</td><td class="num">1.955 € fisso</td></tr>
+    <tr><td>Da 15.000 a 28.000 €</td><td class="num">1.910 + 1.190 × rapporto</td></tr>
+    <tr><td>Da 28.000 a 50.000 €</td><td class="num">1.910 × rapporto</td></tr>
+    <tr><td>Oltre 50.000 €</td><td class="num">0 €</td></tr>
+    <tr><td>Minimo garantito</td><td class="num">690 € (1.380 € se tempo determinato)</td></tr>
+  </tbody>
+</table>
+
+<h3>Cuneo fiscale (L. 207/2024)</h3>
+<table>
+  <thead><tr><th>Reddito lavoro dipendente</th><th class="num">Somma integrativa</th></tr></thead>
+  <tbody>
+    <tr><td>0 – 8.500 €</td><td class="num">7.1%</td></tr>
+    <tr><td>8.500 – 15.000 €</td><td class="num">5.3%</td></tr>
+    <tr><td>15.000 – —</td><td class="num">4.8%</td></tr>
+  </tbody>
+</table>
+<p>Ulteriore detrazione: 1.000 € fisso tra
+20.000 e 32.000 €,
+decrescente fino a zero a 40.000 €.</p>
+
+<h3>Trattamento integrativo</h3>
+<p>1.200 € se reddito complessivo ≤
+15.000 € e c'è capienza: imposta lorda
+sui redditi di lavoro dipendente superiore alla detrazione art. 13 ridotta di
+75 €.</p>
+
+<h3>Contributi INPS</h3>
+<table>
+  <tbody>
+    <tr><td>Aliquota base</td><td class="num">9.19%</td></tr>
+    <tr><td>Aliquota con FIS (aziende &gt;15 dip.)</td><td class="num">9.49%</td></tr>
+    <tr><td>1ª fascia retribuzione pensionabile</td><td class="num">56.224 €</td></tr>
+    <tr><td>Aliquota aggiuntiva oltre la 1ª fascia</td><td class="num">+1%</td></tr>
+    <tr><td>Massimale annuo (iscritti dal 1996)</td><td class="num">122.295 €</td></tr>
+  </tbody>
+</table>
+
+<h3>Addizionali locali</h3>
+<table>
+  <thead><tr><th>Regionale (Lombardia)</th><th class="num">Aliquota</th></tr></thead>
+  <tbody>
+    <tr><td>0 – 15.000 €</td><td class="num">1.23%</td></tr>
+    <tr><td>15.000 – 28.000 €</td><td class="num">1.58%</td></tr>
+    <tr><td>28.000 – 50.000 €</td><td class="num">1.72%</td></tr>
+    <tr><td>50.000 – —</td><td class="num">1.73%</td></tr>
+    <tr><td>Comunale (Milano)</td><td class="num">0.80% (esente fino a 23.000 €)</td></tr>
+  </tbody>
+</table>
+
+<h3>Costo azienda</h3>
+<table>
+  <tbody>
+    <tr><td>Contributi c/azienda — terziario</td><td class="num">29.4%</td></tr>
+    <tr><td>Contributi c/azienda — industria</td><td class="num">32.0%</td></tr>
+    <tr><td>TFR</td><td class="num">RAL / 13,5</td></tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<h2>5. Quattro cose che i calcolatori online spesso sbagliano</h2>
+<ol>
+  <li><strong>Trattamento integrativo e somma integrativa si sommano al netto</strong>, non
+  sono trattenute: la loro base è il reddito di lavoro dipendente, non l'imponibile su cui
+  gira l'IRPEF.</li>
+  <li><strong>Le addizionali locali</strong> per legge si calcolano sul reddito dell'anno
+  precedente, versate in 11 rate l'anno successivo. Qui si assume lo stesso anno d'imposta
+  per semplicità di proiezione — scelta dichiarata, non un errore.</li>
+  <li><strong>Il netto mensile dipende dalle mensilità del CCNL.</strong> Su una RAL di
+  35.000 €, con 12 mensilità il netto mensile è
+  <span class="ok">2.164 €</span>, con 14 è
+  <span class="ok">1.855 €</span> — stesso netto
+  annuo (25.967 €), ripartizione diversa. Dividere
+  sempre per 12 produce un numero sbagliato.</li>
+  <li><strong>Appena sopra i 15.000 € di reddito il netto annuo può scendere pur salendo la
+  RAL.</strong> Non è un bug: a quella soglia la detrazione lavoro dipendente sale da
+  1.955 € a circa 3.100 €, ma si perde interamente il trattamento integrativo di 1.200 €
+  (soglia netta). Esempio dal motore, a cavallo della soglia (±1 € di RAL):
+  netto 15.314,76 € appena sotto la soglia di reddito,
+  netto 15.186,15 € appena sopra — una differenza di
+  128,62 € a
+  fronte di soli 2 € di RAL in più. Scoperto scrivendo i test del motore, non ipotizzato a
+  tavolino: è un effetto soglia reale e documentato della normativa italiana sul lavoro
+  dipendente.</li>
+</ol>
+
+<h2>6. Semplificazioni e limiti</h2>
+<table>
+  <thead><tr><th>Esclusione</th><th>Perché</th></tr></thead>
+  <tbody>
+    <tr><td>Familiari a carico</td><td>Fuori dal caso standard indicato dal brief; introduce ulteriori detrazioni e soglie di reddito del familiare</td></tr>
+    <tr><td>Premi di risultato, welfare, fringe benefit</td><td>Regimi fiscali distinti (imposta sostitutiva 5-10%, soglie di esenzione) non applicabili al caso base</td></tr>
+    <tr><td>Addizionali di comuni diversi da Milano</td><td>Il calcolatore copre esplicitamente Milano, come richiesto</td></tr>
+    <tr><td>Sterilizzazione delle detrazioni oltre 200.000 €</td><td>Irrilevante sotto quella soglia di reddito; il caso standard non la raggiunge</td></tr>
+    <tr><td>INAIL nel costo azienda</td><td>Aliquota variabile per rischio di settore (tariffa specifica INAIL), non un parametro unico</td></tr>
+    <tr><td>Ratei di 13ª/14ª con tassazione separata, conguaglio di fine anno</td><td>Riguardano la distribuzione infra-annuale, non la proiezione annuale richiesta</td></tr>
+    <tr><td>Part-time, contratti infra-annuali</td><td>Fuori dal caso standard "tempo indeterminato"; cambiano il rapporto tra reddito effettivo e teorico usato per la somma integrativa</td></tr>
+    <tr><td>Massimale contributivo iscritti dal 1996 (122.295 €)</td><td>Rilevante solo su RAL molto alte, oltre il range tipico del caso standard</td></tr>
+  </tbody>
+</table>
+
+<h2>7. Validazione</h2>
+<p>Il motore è coperto da 74 test automatici (unitari per modulo, end-to-end sui casi
+standard, continuità sui valori di soglia). In aggiunta, un confronto di sanità con
+calcolatori pubblici indipendenti:</p>
+<table>
+  <thead><tr><th>RAL</th><th class="num">Netto atteso</th><th class="num">Netto calcolato</th><th class="num">Scarto</th><th>Fonte confronto</th></tr></thead>
+  <tbody>
+    <tr><td>35.000 €</td><td class="num">25.968 €</td><td class="num">25.967 €</td><td class="num">-0.00%</td><td class="fonte-url">stipendionettocalcolatore.it, ral-35000-netto-2026</td></tr>
+    <tr><td>60.000 €</td><td class="num">37.621 €</td><td class="num">37.555 €</td><td class="num">-0.18%</td><td class="fonte-url">stipendionettocalcolatore.it, ral-60000-netto/</td></tr>
+  </tbody>
+</table>
+<p>Scarti entro la tolleranza dichiarata (±0,5%): riconducibili ad arrotondamenti e a
+piccole differenze nelle aliquote di dettaglio (es. voce specifica di alcuni contributi
+minori) tra fonti indipendenti, non a un errore nella catena di calcolo.</p>
+
+<div class="page-break"></div>
+
+<h2>8. Bibliografia</h2>
+<p>Solo documenti istituzionali: Normattiva, Agenzia delle Entrate, Dipartimento delle
+Finanze (MEF), INPS. Nessun portale fiscale commerciale è citato come fonte del codice.
+Consultate il 7 agosto 2026.</p>
+<table>
+  <thead><tr><th>Tipo</th><th>Norma</th><th>Descrizione</th></tr></thead>
+  <tbody>
+    <tr><td><span class="badge">Norma</span></td><td>L. 30/12/2024 n. 207, art. 1</td><td>Legge di bilancio 2025: rimodulazione scaglioni IRPEF a regime, innalzamento della detrazione lavoro dipendente a 1.955 €, correttivo di 75 € per il trattamento integrativo, somma integrativa e ulteriore detrazione da cuneo fiscale.<br><span class="fonte-url">https://www.normattiva.it/uri-res/N2Ls?urn%3Anir%3Astato%3Alegge%3A2024-12-30%3B207=</span></td></tr>
+    <tr><td><span class="badge">Norma</span></td><td>L. 30/12/2025 n. 199, art. 1 c.3</td><td>Legge di bilancio 2026: riduzione dell'aliquota del secondo scaglione IRPEF dal 35% al 33% (modifica art. 11 c.1 lett. b TUIR).<br><span class="fonte-url">https://www.normattiva.it/uri-res/N2Ls?urn%3Anir%3Astato%3Alegge%3A2025-12-30%3B199=</span></td></tr>
+    <tr><td><span class="badge">Norma</span></td><td>art. 11 TUIR (d.P.R. 917/1986)</td><td>Scaglioni e aliquote per il calcolo dell'imposta lorda IRPEF.<br><span class="fonte-url">https://www.agenziaentrate.gov.it/portale/imposta-sul-reddito-delle-persone-fisiche-irpef-/aliquote-e-calcolo-dell-irpef</span></td></tr>
+    <tr><td><span class="badge">Prassi</span></td><td>Circolare Agenzia delle Entrate n. 4/E del 16/05/2025</td><td>Istruzioni operative su IRPEF e tassazione dei redditi di lavoro dipendente dopo la legge di bilancio 2025: tabelle di scaglioni e detrazioni, esempi di calcolo della somma integrativa.<br><span class="fonte-url">https://www.agenziaentrate.gov.it/portale/documents/20143/8410823/Circolare+lavoro+dipendente+LB2025+DD+IRPEF+n.+4+del+16+maggio+2025.pdf/36979eaa-9fc5-a4ec-a7aa-136497c53f91</span></td></tr>
+    <tr><td><span class="badge">Norma</span></td><td>art. 51 c.2 lett. a) TUIR</td><td>I contributi previdenziali e assistenziali obbligatori versati dal datore di lavoro e dal lavoratore non concorrono a formare il reddito di lavoro dipendente.<br><span class="fonte-url">https://www.agenziaentrate.gov.it/portale/schede/comunicazioni/dati-relativi-ai-contributi-previdenziali-dal-2015-/normativa-daticontributiprevidenzialidal2015</span></td></tr>
+    <tr><td><span class="badge">Atto locale</span></td><td>art. 72 c.1 L.R. Lombardia 14/07/2003 n. 10</td><td>Addizionale regionale IRPEF della Lombardia, a scaglioni progressivi (1,23% - 1,73%), aliquote pubblicate dal Dipartimento delle Finanze il 28/01/2026.<br><span class="fonte-url">https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/addregirpef/addregirpef.php?reg=10</span></td></tr>
+    <tr><td><span class="badge">Atto locale</span></td><td>Delibera Comune di Milano n. 46 del 28/09/2020</td><td>Addizionale comunale IRPEF di Milano: aliquota unica 0,80%, con esenzione totale (soglia, non franchigia) per reddito imponibile fino a 23.000 €.<br><span class="fonte-url">https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/nuova_addcomirpef/risultato.htm?anno=9999&pr=MI&cc=F205&r=1</span></td></tr>
+    <tr><td><span class="badge">Prassi</span></td><td>Circolare INPS n. 6 del 30/01/2026</td><td>Minimali e massimali contributivi 2026: prima fascia di retribuzione pensionabile a 56.224 €, oltre la quale si applica l'aliquota aggiuntiva IVS dell'1%; massimale annuo 122.295 € per gli iscritti dal 1996.<br><span class="fonte-url">https://www.inps.it/it/it/inps-comunica/atti/circolari-messaggi-e-normativa/dettaglio.circolari-e-messaggi.2026.01.circolare-numero-6-del-30-01-2026_15151.html</span></td></tr>
+    <tr><td><span class="badge">Norma</span></td><td>art. 2120 c.c.</td><td>Il trattamento di fine rapporto si accantona nella misura della retribuzione annua divisa per 13,5 (al netto della rivalutazione).<br><span class="fonte-url">https://www.normattiva.it/uri-res/N2Ls?urn%3Anir%3Astato%3Acodice.civile%3A1942-03-16%3B262~art2120=</span></td></tr>
+  </tbody>
+</table>
+
+</body>
+</html>
