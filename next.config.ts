@@ -3,12 +3,15 @@ import path from "node:path";
 
 const nextConfig: NextConfig = {
   // Montato anche sotto mariglianosimone.design/AI-builder-jethr via rewrite nel
-  // portfolio (pattern "Next.js Multi Zones"): senza basePath, gli asset /_next/*
-  // vengono richiesti dal dominio del portfolio invece che da questa app, e la
-  // pagina appare senza stile. Con basePath, sia il deploy standalone
-  // (calcolatore-ral-netto-jethr.vercel.app/AI-builder-jethr) sia il rewrite
-  // risolvono gli asset correttamente sotto lo stesso prefisso.
+  // portfolio (pattern "Next.js Multi Zones"). basePath allinea le route di
+  // pagina al prefisso del rewrite. assetPrefix è la parte che conta per lo
+  // stile: senza, il browser richiederebbe /_next/static/* passando dal
+  // rewrite del portfolio, che per gli asset restituisce 404 (limite noto di
+  // Vercel: i rewrite verso un'origine esterna non instradano bene i path
+  // /_next annidati). Con assetPrefix assoluto, gli asset vengono richiesti
+  // DIRETTAMENTE dal dominio di questa app, bypassando il rewrite.
   basePath: '/AI-builder-jethr',
+  assetPrefix: 'https://calcolatore-ral-netto-jethr.vercel.app',
   turbopack: {
     root: path.resolve(__dirname),
   },
