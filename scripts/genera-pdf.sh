@@ -40,4 +40,15 @@ genera genera-pdf-metodologia.ts metodologia.html \
 genera genera-pdf-fonti.ts fonti.html \
   "Jet-HR_Calcolatore-RAL-Netto_Fonti.pdf" "Fonti normative"
 
-echo "Fatto."
+# Verifica subito che le fonti siano raggiungibili e che i link nei PDF siano
+# cliccabili: un documento che cita fonti irraggiungibili è peggio di uno che non
+# le cita. Richiede rete; se non c'è, salta la verifica senza far fallire il
+# comando.
+echo
+if npx tsx scripts/verifica-fonti.ts; then
+  echo "Fatto."
+else
+  echo
+  echo "⚠️  Verifica fallita: i PDF sono stati generati ma qualcosa non torna (vedi sopra)." >&2
+  exit 1
+fi

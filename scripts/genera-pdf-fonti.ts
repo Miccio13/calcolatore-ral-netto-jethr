@@ -14,7 +14,7 @@ import { COMUNI_2026 } from '../src/lib/tax/comuni-2026'
 import { DOMINI_ISTITUZIONALI, FONTI, type Fonte } from '../src/lib/tax/fonti'
 import { REGIONI_2026 } from '../src/lib/tax/regioni-2026'
 import { INPUT_DEFAULT } from '../src/lib/tax/types'
-import { BRAND_CSS, copertina } from './pdf-brand'
+import { BRAND_CSS, copertina, escapeHtml, linkFonte } from './pdf-brand'
 
 const OGGI = '7 agosto 2026'
 
@@ -80,11 +80,11 @@ function scheda(f: Fonte, dettaglio: string, etichettaDettaglio: string): string
 <div class="fonte keep">
   <div class="fonte-head">
     <span class="badge">${tipoLabel(f.tipo)}</span>
-    <span class="fonte-norma">${f.norma}</span>
+    <span class="fonte-norma">${escapeHtml(f.norma)}</span>
   </div>
-  <p class="fonte-desc">${f.descrizione}</p>
-  <p class="fonte-uso"><span class="fonte-uso-label">${etichettaDettaglio}</span> ${dettaglio}</p>
-  <p class="url">${f.url}</p>
+  <p class="fonte-desc">${escapeHtml(f.descrizione)}</p>
+  <p class="fonte-uso"><span class="fonte-uso-label">${etichettaDettaglio}</span> ${escapeHtml(dettaglio)}</p>
+  ${linkFonte(f.url)}
 </div>`
 }
 

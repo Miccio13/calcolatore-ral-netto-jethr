@@ -35,7 +35,7 @@ export const FONTI: Record<string, Fonte> = {
     norma: 'L. 30/12/2024 n. 207, art. 1',
     descrizione:
       'Legge di bilancio 2025: rimodulazione scaglioni IRPEF a regime, innalzamento della detrazione lavoro dipendente a 1.955 €, correttivo di 75 € per il trattamento integrativo, somma integrativa e ulteriore detrazione da cuneo fiscale.',
-    url: 'https://www.normattiva.it/uri-res/N2Ls?urn%3Anir%3Astato%3Alegge%3A2024-12-30%3B207=',
+    url: 'https://www.normattiva.it/eli/stato/LEGGE/2024/12/30/207/CONSOLIDATED',
     tipo: 'norma',
   },
   ldb2026: {
@@ -43,7 +43,7 @@ export const FONTI: Record<string, Fonte> = {
     norma: 'L. 30/12/2025 n. 199, art. 1 c.3',
     descrizione:
       'Legge di bilancio 2026: riduzione dell\'aliquota del secondo scaglione IRPEF dal 35% al 33% (modifica art. 11 c.1 lett. b TUIR).',
-    url: 'https://www.normattiva.it/uri-res/N2Ls?urn%3Anir%3Astato%3Alegge%3A2025-12-30%3B199=',
+    url: 'https://www.normattiva.it/eli/stato/LEGGE/2025/12/30/199/CONSOLIDATED',
     tipo: 'norma',
   },
   tuirArt11: {
@@ -162,7 +162,7 @@ export const FONTI: Record<string, Fonte> = {
     norma: 'art. 2120 c.c.',
     descrizione:
       'Il trattamento di fine rapporto si accantona nella misura della retribuzione annua divisa per 13,5 (al netto della rivalutazione).',
-    url: 'https://www.normattiva.it/uri-res/N2Ls?urn%3Anir%3Astato%3Acodice.civile%3A1942-03-16%3B262~art2120=',
+    url: 'https://www.normattiva.it/eli/stato/REGIO.DECRETO/1942/03/16/262/CONSOLIDATED',
     tipo: 'norma',
   },
 }

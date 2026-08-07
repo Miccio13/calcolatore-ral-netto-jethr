@@ -55,7 +55,22 @@
   p { margin: 0 0 8pt; }
   strong { font-weight: 700; }
   em { font-style: italic; }
-  a { color: #11150a; text-decoration: none; }
+  /* Chrome converte i tag <a href> in annotazioni /URI del PDF: sono questi a
+     rendere un link cliccabile una volta stampato. Un URL scritto come testo
+     semplice resta testo morto.
+     Il colore non è decorativo: un link indistinguibile dal testo attorno è
+     cliccabile ma non scopribile, e chi legge non sa di poterci cliccare. */
+  a { color: #33501a; text-decoration: none; }
+  /* Il solo colore non basta: un verde scuro accanto a un testo quasi nero, a 9pt,
+     è indistinguibile. La sottolineatura in tinta sage è l'affordance che dice
+     "questo si clicca" senza urlare. Gli URL per esteso (.url) ne fanno a meno:
+     si riconoscono già da soli. */
+  a:not(.url) {
+    text-decoration: underline;
+    text-decoration-color: #b9cf8e;
+    text-decoration-thickness: 0.7pt;
+    text-underline-offset: 2pt;
+  }
 
   ol, ul { margin: 0 0 10pt; padding-left: 16pt; }
   li { margin-bottom: 7pt; padding-left: 2pt; }
@@ -80,7 +95,14 @@
     border-radius: 999px; padding: 1.5pt 7pt;
     font-size: 7.5pt; font-weight: 700; letter-spacing: 0.02em; white-space: nowrap;
   }
-  .url { font-size: 8pt; color: #6b6f61; word-break: break-all; line-height: 1.4; }
+  /* overflow-wrap: anywhere invece di word-break: break-all — quest'ultimo
+     spezzava gli URL a metà anche quando c'era spazio, e chi li copiava dal PDF
+     si portava dietro l'a-capo ottenendo un indirizzo rotto. */
+  .url {
+    display: block; font-size: 8pt; color: #6b6f61;
+    overflow-wrap: anywhere; line-height: 1.4;
+  }
+  a.url { color: #5c6b3f; }
   .muted { color: #6b6f61; }
   .accent { color: #33501a; font-weight: 700; }
   code {
@@ -426,26 +448,27 @@ calcolo. I calcolatori usati per il confronto sono citati qui come <em>benchmark
 fonte di alcun parametro: quelli vengono tutti da documenti istituzionali.</p>
 
 <h2>8. Fonti in sintesi</h2>
-<p>Elenco compatto; il dettaglio con URL, ambito di utilizzo e data di consultazione è nel
-documento <strong>&laquo;Fonti normative&raquo;</strong> allegato.</p>
+<p>Elenco compatto: ogni riferimento è un link alla fonte. Il dettaglio con URL per esteso,
+ambito di utilizzo e data di consultazione è nel documento
+<strong>&laquo;Fonti normative&raquo;</strong> allegato.</p>
 <table>
   <thead><tr><th style="width:22%">Tipo</th><th>Riferimento</th></tr></thead>
   <tbody>
-    <tr><td><span class="badge">Norma</span></td><td>L. 30/12/2024 n. 207, art. 1</td></tr>
-    <tr><td><span class="badge">Norma</span></td><td>L. 30/12/2025 n. 199, art. 1 c.3</td></tr>
-    <tr><td><span class="badge">Norma</span></td><td>art. 11 TUIR (d.P.R. 917/1986)</td></tr>
-    <tr><td><span class="badge">Norma</span></td><td>art. 13 c.1 e c.6-bis TUIR</td></tr>
-    <tr><td><span class="badge">Norma</span></td><td>art. 51 c.2 lett. a) TUIR</td></tr>
-    <tr><td><span class="badge">Prassi</span></td><td>Circolare Agenzia delle Entrate n. 4/E del 16/05/2025</td></tr>
-    <tr><td><span class="badge">Atto locale</span></td><td>art. 72 c.1 L.R. Lombardia 14/07/2003 n. 10</td></tr>
-    <tr><td><span class="badge">Atto locale</span></td><td>Leggi regionali 2025/2026 di ciascuna regione, art. 6 D.Lgs. 68/2011, art. 50 D.Lgs. 446/1997</td></tr>
-    <tr><td><span class="badge">Atto locale</span></td><td>Delibere comunali 2025/2026, art. 1 c.142-143 L. 296/2006</td></tr>
-    <tr><td><span class="badge">Atto locale</span></td><td>Delibera Comune di Milano n. 46 del 28/09/2020</td></tr>
-    <tr><td><span class="badge">Prassi</span></td><td>Circolare INPS n. 6 del 30/01/2026</td></tr>
-    <tr><td><span class="badge">Norma</span></td><td>art. 12 TUIR (d.P.R. 917/1986)</td></tr>
-    <tr><td><span class="badge">Prassi</span></td><td>art. 51 c.3 TUIR; L. 207/2024; circ. Agenzia Entrate n. 35/E del 04/11/2022</td></tr>
-    <tr><td><span class="badge">Prassi</span></td><td>art. 1 c.773 L. 296/2006; msg. INPS n. 3618 del 17/10/2023</td></tr>
-    <tr><td><span class="badge">Norma</span></td><td>art. 2120 c.c.</td></tr>
+    <tr><td><span class="badge">Norma</span></td><td><a href="https://www.normattiva.it/eli/stato/LEGGE/2024/12/30/207/CONSOLIDATED">L. 30/12/2024 n. 207, art. 1</a></td></tr>
+    <tr><td><span class="badge">Norma</span></td><td><a href="https://www.normattiva.it/eli/stato/LEGGE/2025/12/30/199/CONSOLIDATED">L. 30/12/2025 n. 199, art. 1 c.3</a></td></tr>
+    <tr><td><span class="badge">Norma</span></td><td><a href="https://www.agenziaentrate.gov.it/portale/imposta-sul-reddito-delle-persone-fisiche-irpef-/aliquote-e-calcolo-dell-irpef">art. 11 TUIR (d.P.R. 917/1986)</a></td></tr>
+    <tr><td><span class="badge">Norma</span></td><td><a href="https://www.agenziaentrate.gov.it/portale/documents/20143/255456/Articolo+13+del+Dpr+917_1986_art13_dpr917_1986.pdf/328e081f-d939-e7de-4472-0e573ce44367">art. 13 c.1 e c.6-bis TUIR</a></td></tr>
+    <tr><td><span class="badge">Norma</span></td><td><a href="https://www.agenziaentrate.gov.it/portale/schede/comunicazioni/dati-relativi-ai-contributi-previdenziali-dal-2015-/normativa-daticontributiprevidenzialidal2015">art. 51 c.2 lett. a) TUIR</a></td></tr>
+    <tr><td><span class="badge">Prassi</span></td><td><a href="https://www.agenziaentrate.gov.it/portale/documents/20143/8410823/Circolare+lavoro+dipendente+LB2025+DD+IRPEF+n.+4+del+16+maggio+2025.pdf/36979eaa-9fc5-a4ec-a7aa-136497c53f91">Circolare Agenzia delle Entrate n. 4/E del 16/05/2025</a></td></tr>
+    <tr><td><span class="badge">Atto locale</span></td><td><a href="https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/addregirpef/addregirpef.php?reg=10">art. 72 c.1 L.R. Lombardia 14/07/2003 n. 10</a></td></tr>
+    <tr><td><span class="badge">Atto locale</span></td><td><a href="https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/addregirpef/sceltaregione.htm">Leggi regionali 2025/2026 di ciascuna regione, art. 6 D.Lgs. 68/2011, art. 50 D.Lgs. 446/1997</a></td></tr>
+    <tr><td><span class="badge">Atto locale</span></td><td><a href="https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/nuova_addcomirpef/sceltaregione.htm">Delibere comunali 2025/2026, art. 1 c.142-143 L. 296/2006</a></td></tr>
+    <tr><td><span class="badge">Atto locale</span></td><td><a href="https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/nuova_addcomirpef/risultato.htm?anno=9999&amp;pr=MI&amp;cc=F205&amp;r=1">Delibera Comune di Milano n. 46 del 28/09/2020</a></td></tr>
+    <tr><td><span class="badge">Prassi</span></td><td><a href="https://www.inps.it/it/it/inps-comunica/atti/circolari-messaggi-e-normativa/dettaglio.circolari-e-messaggi.2026.01.circolare-numero-6-del-30-01-2026_15151.html">Circolare INPS n. 6 del 30/01/2026</a></td></tr>
+    <tr><td><span class="badge">Norma</span></td><td><a href="https://www.agenziaentrate.gov.it/portale/documents/20143/255456/Articolo+12+del+Dpr+917_1986_articolo_12_Tuir.pdf/7224c483-95a6-f2b3-a2be-68fdf30c5b54">art. 12 TUIR (d.P.R. 917/1986)</a></td></tr>
+    <tr><td><span class="badge">Prassi</span></td><td><a href="https://www.agenziaentrate.gov.it/portale/documents/20143/4785312/circolare_welfare_aziendale_+n.+35+del+4+novembre+2022+.pdf/657de91b-6e75-2330-ce10-450e5f7a561b">art. 51 c.3 TUIR; L. 207/2024; circ. Agenzia Entrate n. 35/E del 04/11/2022</a></td></tr>
+    <tr><td><span class="badge">Prassi</span></td><td><a href="https://www.inps.it/it/it/inps-comunica/atti/circolari-messaggi-e-normativa/dettaglio.circolari-e-messaggi.2023.10.messaggio-numero-3618-del-17-10-2023_14297.html">art. 1 c.773 L. 296/2006; msg. INPS n. 3618 del 17/10/2023</a></td></tr>
+    <tr><td><span class="badge">Norma</span></td><td><a href="https://www.normattiva.it/eli/stato/REGIO.DECRETO/1942/03/16/262/CONSOLIDATED">art. 2120 c.c.</a></td></tr>
   </tbody>
 </table>
 

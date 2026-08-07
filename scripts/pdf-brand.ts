@@ -85,7 +85,22 @@ export const BRAND_CSS = `
   p { margin: 0 0 8pt; }
   strong { font-weight: 700; }
   em { font-style: italic; }
-  a { color: #11150a; text-decoration: none; }
+  /* Chrome converte i tag <a href> in annotazioni /URI del PDF: sono questi a
+     rendere un link cliccabile una volta stampato. Un URL scritto come testo
+     semplice resta testo morto.
+     Il colore non è decorativo: un link indistinguibile dal testo attorno è
+     cliccabile ma non scopribile, e chi legge non sa di poterci cliccare. */
+  a { color: #33501a; text-decoration: none; }
+  /* Il solo colore non basta: un verde scuro accanto a un testo quasi nero, a 9pt,
+     è indistinguibile. La sottolineatura in tinta sage è l'affordance che dice
+     "questo si clicca" senza urlare. Gli URL per esteso (.url) ne fanno a meno:
+     si riconoscono già da soli. */
+  a:not(.url) {
+    text-decoration: underline;
+    text-decoration-color: #b9cf8e;
+    text-decoration-thickness: 0.7pt;
+    text-underline-offset: 2pt;
+  }
 
   ol, ul { margin: 0 0 10pt; padding-left: 16pt; }
   li { margin-bottom: 7pt; padding-left: 2pt; }
@@ -110,7 +125,14 @@ export const BRAND_CSS = `
     border-radius: 999px; padding: 1.5pt 7pt;
     font-size: 7.5pt; font-weight: 700; letter-spacing: 0.02em; white-space: nowrap;
   }
-  .url { font-size: 8pt; color: #6b6f61; word-break: break-all; line-height: 1.4; }
+  /* overflow-wrap: anywhere invece di word-break: break-all — quest'ultimo
+     spezzava gli URL a metà anche quando c'era spazio, e chi li copiava dal PDF
+     si portava dietro l'a-capo ottenendo un indirizzo rotto. */
+  .url {
+    display: block; font-size: 8pt; color: #6b6f61;
+    overflow-wrap: anywhere; line-height: 1.4;
+  }
+  a.url { color: #5c6b3f; }
   .muted { color: #6b6f61; }
   .accent { color: #33501a; font-weight: 700; }
   code {
@@ -159,6 +181,34 @@ export function copertina(o: OpzioniCopertina): string {
   <div class="cover-rule"></div>
   <p class="cover-meta">${o.meta}</p>
 </section>`
+}
+
+/**
+ * Escaping HTML per testo e attributi.
+ *
+ * Non è teorico: l'URL dell'addizionale comunale contiene `&pr=…&cc=…&r=1`, e una
+ * `&` non escapata dentro un attributo `href` è HTML malformato — il parser può
+ * interpretare `&cc` come l'inizio di un'entità e corrompere la destinazione del
+ * link. Le virgolette vanno escapate per la stessa ragione: chiuderebbero
+ * l'attributo in anticipo.
+ */
+export function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+/**
+ * Link a una fonte: l'URL è insieme destinazione e testo visibile. In un
+ * documento che serve a dimostrare la tracciabilità delle fonti l'indirizzo per
+ * esteso resta utile anche stampato su carta, dove nessun link è cliccabile.
+ */
+export function linkFonte(url: string): string {
+  const sicuro = escapeHtml(url)
+  return `<a class="url" href="${sicuro}">${sicuro}</a>`
 }
 
 /** Formattazione numerica italiana, identica a quella del motore di calcolo. */

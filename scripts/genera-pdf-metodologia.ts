@@ -27,7 +27,7 @@ import { COMUNI_2026 } from '../src/lib/tax/comuni-2026'
 import { REGIONI_2026 } from '../src/lib/tax/regioni-2026'
 import { FONTI, type Fonte } from '../src/lib/tax/fonti'
 import { INPUT_DEFAULT } from '../src/lib/tax/types'
-import { BRAND_CSS, copertina, fascia, fmt, pct } from './pdf-brand'
+import { BRAND_CSS, copertina, escapeHtml, fascia, fmt, pct } from './pdf-brand'
 
 const OGGI = '7 agosto 2026'
 
@@ -412,13 +412,17 @@ calcolo. I calcolatori usati per il confronto sono citati qui come <em>benchmark
 fonte di alcun parametro: quelli vengono tutti da documenti istituzionali.</p>
 
 <h2>8. Fonti in sintesi</h2>
-<p>Elenco compatto; il dettaglio con URL, ambito di utilizzo e data di consultazione è nel
-documento <strong>&laquo;Fonti normative&raquo;</strong> allegato.</p>
+<p>Elenco compatto: ogni riferimento è un link alla fonte. Il dettaglio con URL per esteso,
+ambito di utilizzo e data di consultazione è nel documento
+<strong>&laquo;Fonti normative&raquo;</strong> allegato.</p>
 <table>
   <thead><tr><th style="width:22%">Tipo</th><th>Riferimento</th></tr></thead>
   <tbody>
     ${fontiUniche
-      .map((f) => `<tr><td><span class="badge">${tipoLabel(f.tipo)}</span></td><td>${f.norma}</td></tr>`)
+      .map(
+        (f) =>
+          `<tr><td><span class="badge">${tipoLabel(f.tipo)}</span></td><td><a href="${escapeHtml(f.url)}">${escapeHtml(f.norma)}</a></td></tr>`
+      )
       .join('\n    ')}
   </tbody>
 </table>
