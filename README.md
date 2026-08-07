@@ -5,8 +5,16 @@ annuo, netto mensile e tutte le voci trattenute/aggiunte al lordo, con la fonte
 normativa di ogni singolo calcolo — e lascia all'utente il controllo di ogni
 variabile che incide davvero sul risultato, non solo del caso base.
 
-**[→ Vedi il PDF metodologico completo](./docs/Jet-HR_Calcolatore-RAL-Netto_Metodologia.pdf)**
-per il modello dettagliato, le fonti, le semplificazioni e la validazione.
+Due documenti di accompagnamento, entrambi generati automaticamente dal codice
+sorgente del motore — parametri, esempi numerici, conteggio dei test e fonti non
+sono trascritti a mano, quindi non possono divergere dall'implementazione:
+
+- **[Metodologia](./docs/Jet-HR_Calcolatore-RAL-Netto_Metodologia.pdf)** — il modello
+  di calcolo, i parametri 2026, le semplificazioni dichiarate e la validazione
+- **[Fonti normative](./docs/Jet-HR_Calcolatore-RAL-Netto_Fonti.pdf)** — ogni fonte
+  con il suo ruolo, l'URL istituzionale e le voci di calcolo che la citano
+
+Si rigenerano entrambi con `./scripts/genera-pdf.sh`.
 
 ## Il caso di default, non l'unico caso
 

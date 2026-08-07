@@ -57,8 +57,8 @@ export const FONTI: Record<string, Fonte> = {
     id: 'tuirArt13',
     norma: 'art. 13 c.1 e c.6-bis TUIR',
     descrizione:
-      'Detrazione per redditi di lavoro dipendente, decrescente e azzerata a 50.000 €; il reddito di riferimento è il reddito complessivo al netto dell\'abitazione principale.',
-    url: 'https://www.agenziaentrate.gov.it/portale/documents/20143/8410823/Circolare+lavoro+dipendente+LB2025+DD+IRPEF+n.+4+del+16+maggio+2025.pdf/36979eaa-9fc5-a4ec-a7aa-136497c53f91',
+      'Detrazione per redditi di lavoro dipendente, decrescente e azzerata a 50.000 €; il reddito di riferimento è il reddito complessivo al netto dell\'abitazione principale. Il testo dell\'articolo contiene anche il minimo di 690 € (1.380 € per il tempo determinato) applicabile al solo primo scaglione.',
+    url: 'https://www.agenziaentrate.gov.it/portale/documents/20143/255456/Articolo+13+del+Dpr+917_1986_art13_dpr917_1986.pdf/328e081f-d939-e7de-4472-0e573ce44367',
     tipo: 'norma',
   },
   tuirArt51: {
