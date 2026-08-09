@@ -9,18 +9,14 @@
  */
 import { writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { calcola } from '../src/lib/tax/calcola'
 import { COMUNI_2026 } from '../src/lib/tax/comuni-2026'
 import { DOMINI_ISTITUZIONALI, FONTI, type Fonte } from '../src/lib/tax/fonti'
 import { REGIONI_2026 } from '../src/lib/tax/regioni-2026'
 import { INPUT_DEFAULT } from '../src/lib/tax/types'
-import { BRAND_CSS, copertina, escapeHtml, linkFonte } from './pdf-brand'
+import { BRAND_CSS, copertina } from './pdf-brand'
+import { FONTI_CSS, raccogliVociPerFonte, scheda } from './pdf-fonti-condiviso'
 
-const OGGI = '7 agosto 2026'
-
-function tipoLabel(tipo: Fonte['tipo']): string {
-  return { norma: 'Norma', prassi: 'Prassi', 'atto-locale': 'Atto locale' }[tipo]
-}
+const OGGI = '9 agosto 2026'
 
 /**
  * Input scelti per far comparire nel breakdown ogni voce che il motore sa
@@ -39,17 +35,7 @@ const CASI_SONDA = [
 ]
 
 /** fonteId -> etichette delle voci di risultato che la citano. */
-const vociPerFonte = new Map<string, Set<string>>()
-for (const input of CASI_SONDA) {
-  const r = calcola(input)
-  for (const voce of [...r.breakdown, ...r.costoAzienda.breakdown]) {
-    const set = vociPerFonte.get(voce.fonte.id) ?? new Set<string>()
-    // Il nome del comune finisce nell'etichetta: normalizzato, o la stessa voce
-    // comparirebbe più volte al cambiare della città scelta.
-    set.add(voce.label.replace(/\s*\(.*\)$/, ''))
-    vociPerFonte.set(voce.fonte.id, set)
-  }
-}
+const vociPerFonte = raccogliVociPerFonte(CASI_SONDA)
 
 /**
  * Fonti che non compaiono in una singola voce di risultato ma che reggono il
@@ -69,24 +55,17 @@ const RUOLI_DI_CONTESTO: Record<string, string> = {
     'Verifica dedicata sulla regione del caso di default: base giuridica e aliquote lette singolarmente, prima di estendere la copertura a tutte le regioni.',
   addizionaleComunaleMilano:
     'Verifica dedicata sul comune del caso di default, da cui proviene anche la conferma che l’esenzione comunale è una soglia e non una franchigia — meccanismo poi applicato a tutti i comuni.',
+  circolareAde4e2022:
+    'Chiarisce la meccanica della maggiorazione di 65 € (art. 13 c.1.1): spetta per intero, senza ragguaglio al periodo di lavoro. Nel motore è per questo l’unico addendo che si somma dopo il riproporzionamento della detrazione.',
+  addizionaleRegionaleLazio:
+    'Il Lazio 2026 non segue la progressione marginale standard: sotto 28.000 € vale l’1,73% sull’intero imponibile, sopra scattano gli scaglioni con una detrazione di raccordo di 60 €. La meccanica dedicata implementata nel motore deriva da questo prospetto.',
+  addizionaleRegionaleFriuli:
+    'Il Friuli-VG applica l’aliquota della fascia di appartenenza all’intero imponibile (0,70% fino a 15.000 €, 1,23% sopra), non una progressione a scaglioni. Anche qui il motore usa una meccanica dedicata, derivata da questo prospetto.',
 }
 
-const fonti = Object.values(FONTI)
+const fonti: Fonte[] = Object.values(FONTI)
 const operative = fonti.filter((f) => vociPerFonte.has(f.id))
 const contesto = fonti.filter((f) => !vociPerFonte.has(f.id))
-
-function scheda(f: Fonte, dettaglio: string, etichettaDettaglio: string): string {
-  return `
-<div class="fonte keep">
-  <div class="fonte-head">
-    <span class="badge">${tipoLabel(f.tipo)}</span>
-    <span class="fonte-norma">${escapeHtml(f.norma)}</span>
-  </div>
-  <p class="fonte-desc">${escapeHtml(f.descrizione)}</p>
-  <p class="fonte-uso"><span class="fonte-uso-label">${etichettaDettaglio}</span> ${escapeHtml(dettaglio)}</p>
-  ${linkFonte(f.url)}
-</div>`
-}
 
 const html = `<!doctype html>
 <html lang="it">
@@ -95,38 +74,7 @@ const html = `<!doctype html>
 <title>Jet HR — Calcolatore RAL → Netto: fonti normative</title>
 <style>
 ${BRAND_CSS}
-
-  .fonte {
-    border: 0.75pt solid #e8e6dc; border-left: 2.5pt solid #dbe6bd;
-    border-radius: 3pt; padding: 10pt 12pt; margin: 0 0 9pt;
-  }
-  .fonte-head {
-    display: flex; align-items: baseline; gap: 8pt;
-    margin-bottom: 5pt;
-  }
-  .fonte-norma { font-weight: 700; font-size: 10.4pt; }
-  .fonte-desc { margin: 0 0 6pt; font-size: 9.4pt; line-height: 1.5; }
-  .fonte-uso {
-    margin: 0 0 6pt; font-size: 9pt; line-height: 1.5;
-    color: #3f4437;
-  }
-  .fonte-uso-label {
-    font-weight: 700; color: #33501a;
-    font-size: 8pt; text-transform: uppercase; letter-spacing: 0.04em;
-    margin-right: 3pt;
-  }
-  .fonte .url { margin: 0; }
-
-  .domini { columns: 2; column-gap: 18pt; margin: 8pt 0 14pt; }
-  .domini li { margin-bottom: 4pt; break-inside: avoid; }
-
-  .conteggio {
-    display: flex; gap: 26pt; margin: 0 0 18pt;
-    padding: 11pt 14pt; background: #eef3e2; border-radius: 4pt;
-  }
-  .conteggio div { line-height: 1.3; }
-  .conteggio .n { font-size: 17pt; font-weight: 700; display: block; }
-  .conteggio .l { font-size: 8pt; text-transform: uppercase; letter-spacing: 0.05em; color: #33501a; font-weight: 600; }
+${FONTI_CSS}
 </style>
 </head>
 <body>
@@ -163,6 +111,8 @@ riferimento — e un test automatico verifica che ogni URL appartenga a uno di q
   <div><span class="n">${REGIONI_2026.length} + ${COMUNI_2026.length}</span><span class="l">Regioni + comuni coperti</span></div>
 </div>
 
+<div class="page-break"></div>
+
 <h2>2. Fonti operative</h2>
 <p>Fonti citate direttamente da una voce del risultato. L’elenco delle voci qui sotto non è
 scritto a mano: si ottiene eseguendo il motore su una batteria di casi scelti per attivare
@@ -185,24 +135,6 @@ esplicitamente, perché una derivazione automatica sarebbe una finzione.</p>
 ${contesto
   .map((f) => scheda(f, RUOLI_DI_CONTESTO[f.id] ?? '—', 'Ruolo nel modello'))
   .join('\n')}
-
-<h2>4. Cosa non è una fonte</h2>
-<p>Due calcolatori pubblici sono stati usati come <em>benchmark</em> per un confronto di
-sanità sui risultati finali, ed è così che sono citati nel documento di metodologia: servono
-a rispondere alla domanda “il numero che esce è plausibile?”, non a stabilire quale sia
-l’aliquota di una voce. Nessun parametro del codice proviene da loro.</p>
-
-<h2>5. Una nota sull’onestà delle citazioni</h2>
-<p>Un caso merita di essere segnalato invece che nascosto. L’aliquota contributiva
-dell’apprendistato (5,84%) è confermata da tre fonti indipendenti che citano tutte lo stesso
-riferimento normativo, ma il recupero del testo integrale dell’art. 1 della L. 296/2006 —
-una legge finanziaria da 1.364 commi — non è riuscito tecnicamente durante la ricerca. Il
-dato è quindi marcato nel registro come da rileggere sulla fonte primaria, con la ragione
-scritta accanto, invece di essere presentato come verificato al pari degli altri.</p>
-<p>Lo stesso vale per il verso opposto: il “troncamento a quattro decimali” nella formula
-della detrazione art. 13, riportato da diversi portali fiscali, non compare né nella tabella
-della circolare 4/E né in un riscontro testuale sull’articolo. Non è stato replicato nel
-codice, e la scelta è annotata nel modulo che implementa quella formula.</p>
 
 </body>
 </html>
