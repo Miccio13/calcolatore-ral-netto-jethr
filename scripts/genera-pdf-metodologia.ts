@@ -25,15 +25,11 @@ import {
 } from '../src/lib/tax/constants-2026'
 import { COMUNI_2026 } from '../src/lib/tax/comuni-2026'
 import { REGIONI_2026 } from '../src/lib/tax/regioni-2026'
-import { FONTI, type Fonte } from '../src/lib/tax/fonti'
+import { FONTI } from '../src/lib/tax/fonti'
 import { INPUT_DEFAULT } from '../src/lib/tax/types'
 import { BRAND_CSS, copertina, escapeHtml, fascia, fmt, pct } from './pdf-brand'
 
 const OGGI = '9 agosto 2026'
-
-function tipoLabel(tipo: Fonte['tipo']): string {
-  return { norma: 'Norma', prassi: 'Prassi', 'atto-locale': 'Atto locale' }[tipo]
-}
 
 /**
  * Numero di test letto dalla suite reale invece che scritto a mano: è un numero
@@ -108,7 +104,6 @@ const RIGHE_MODELLO = [
   { voce: 'TFR accantonato', base: 'RAL', formula: 'RAL / 13,5', fonte: FONTI.tfr },
 ]
 
-const fontiUniche = Array.from(new Map(Object.values(FONTI).map((f) => [f.url, f])).values())
 const lombardia = REGIONI_2026.find((r) => r.id === 'lombardia')!.addizionale as {
   tipo: 'progressivo'
   scaglioni: { da: number; a: number; aliquota: number }[]
@@ -120,7 +115,12 @@ const html = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <title>Jet HR · Calcolatore RAL Netto: metodologia</title>
-<style>${BRAND_CSS}</style>
+<style>${BRAND_CSS}
+  /* Solo in questo documento: ogni capitolo parte a pagina nuova. Il primo no,
+     seguirebbe il salto già forzato dalla copertina producendo una pagina bianca. */
+  h2 { break-before: page; page-break-before: always; }
+  h2:first-of-type { break-before: auto; page-break-before: auto; }
+</style>
 </head>
 <body>
 
@@ -139,7 +139,7 @@ contribuzione trattenute al lordo.</p>
 <p>Il motore di calcolo (<code>src/lib/tax/</code>) è indipendente dall’interfaccia: ogni voce
 del risultato porta con sé la formula applicata e la norma che la impone, verificabile nel
 codice sorgente e in questo documento, generato automaticamente dagli stessi file che
-alimentano l’interfaccia, così che testo e codice non possano divergere.</p>
+alimentano l’interfaccia, così che testo e codice combacino.</p>
 <div class="callout">
   <p>Ogni fonte citata è un documento istituzionale: Normattiva, Agenzia delle Entrate,
   Dipartimento delle Finanze, INPS. Nessun portale fiscale commerciale è usato come fonte
@@ -159,10 +159,6 @@ ma ogni variabile che incide realmente sul netto è gestibile dall’utente:</p>
   <li>13 mensilità · <span class="muted">più universale di 14 tra i CCNL in assenza di un contratto dichiarato; selezionabile: 12, 13, 14</span></li>
   <li>Contratto attivo per l’intero anno d’imposta, 365 giorni · <span class="muted">selezionabile: 1-365</span></li>
 </ul>
-<p>Nel caso di default non esistono altre fonti di reddito, quindi imponibile fiscale, reddito
-di lavoro dipendente e reddito complessivo coincidono. Il motore li tratta comunque come
-concetti distinti: è nella realtà che divergono, non in questo caso.</p>
-
 <h2>3. Il modello di calcolo</h2>
 <p>Ogni passaggio della catena usa la propria base imponibile: non tutte le voci si calcolano
 sulla RAL.</p>
@@ -173,14 +169,12 @@ sulla RAL.</p>
   <tbody>
     ${RIGHE_MODELLO.map(
       (r) =>
-        `<tr><td>${r.voce}</td><td>${r.base}</td><td>${r.formula}</td><td>${r.fonte.norma}</td></tr>`
+        `<tr><td>${r.voce}</td><td>${r.base}</td><td>${r.formula}</td><td><a href="${escapeHtml(r.fonte.url)}">${r.fonte.norma}</a></td></tr>`
     ).join('\n    ')}
   </tbody>
 </table>
 <p>Trattamento integrativo e somma integrativa <strong>si sommano</strong> al netto: non sono
 detrazioni che riducono l’imposta, sono credito erogato in busta paga.</p>
-
-<div class="page-break"></div>
 
 <h2>4. Parametri 2026</h2>
 
@@ -410,25 +404,6 @@ sanità con calcolatori pubblici indipendenti:</p>
 differenze nelle aliquote di dettaglio tra fonti indipendenti, non a un errore nella catena di
 calcolo. I calcolatori usati per il confronto sono citati qui come <em>benchmark</em>, non come
 fonte di alcun parametro: quelli vengono tutti da documenti istituzionali.</p>
-
-<h2>8. Fonti in sintesi</h2>
-<p>Elenco compatto: ogni riferimento è un link alla fonte. Il dettaglio con URL per esteso,
-ambito di utilizzo e data di consultazione è nel documento
-<strong>&laquo;Fonti normative&raquo;</strong> allegato. Le voci qui sono
-${fontiUniche.length} per ${Object.keys(FONTI).length} fonti del registro: tre fonti
-(somma integrativa, trattamento integrativo e circolare 4/E 2025) condividono lo stesso
-documento dell'Agenzia delle Entrate e compaiono una sola volta.</p>
-<table>
-  <thead><tr><th style="width:22%">Tipo</th><th>Riferimento</th></tr></thead>
-  <tbody>
-    ${fontiUniche
-      .map(
-        (f) =>
-          `<tr><td><span class="badge">${tipoLabel(f.tipo)}</span></td><td><a href="${escapeHtml(f.url)}">${escapeHtml(f.norma)}</a></td></tr>`
-      )
-      .join('\n    ')}
-  </tbody>
-</table>
 
 </body>
 </html>

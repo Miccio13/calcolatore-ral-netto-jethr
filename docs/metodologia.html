@@ -132,6 +132,11 @@
      contenuto di ogni pagina successiva invece di stare a piè di pagina. Provato
      e scartato — meglio nessun footer che uno rotto. Le intestazioni di sezione
      e la copertina bastano a identificare il documento. */
+
+  /* Solo in questo documento: ogni capitolo parte a pagina nuova. Il primo no,
+     seguirebbe il salto già forzato dalla copertina producendo una pagina bianca. */
+  h2 { break-before: page; page-break-before: always; }
+  h2:first-of-type { break-before: auto; page-break-before: auto; }
 </style>
 </head>
 <body>
@@ -174,7 +179,7 @@ contribuzione trattenute al lordo.</p>
 <p>Il motore di calcolo (<code>src/lib/tax/</code>) è indipendente dall’interfaccia: ogni voce
 del risultato porta con sé la formula applicata e la norma che la impone, verificabile nel
 codice sorgente e in questo documento, generato automaticamente dagli stessi file che
-alimentano l’interfaccia, così che testo e codice non possano divergere.</p>
+alimentano l’interfaccia, così che testo e codice combacino.</p>
 <div class="callout">
   <p>Ogni fonte citata è un documento istituzionale: Normattiva, Agenzia delle Entrate,
   Dipartimento delle Finanze, INPS. Nessun portale fiscale commerciale è usato come fonte
@@ -194,10 +199,6 @@ ma ogni variabile che incide realmente sul netto è gestibile dall’utente:</p>
   <li>13 mensilità · <span class="muted">più universale di 14 tra i CCNL in assenza di un contratto dichiarato; selezionabile: 12, 13, 14</span></li>
   <li>Contratto attivo per l’intero anno d’imposta, 365 giorni · <span class="muted">selezionabile: 1-365</span></li>
 </ul>
-<p>Nel caso di default non esistono altre fonti di reddito, quindi imponibile fiscale, reddito
-di lavoro dipendente e reddito complessivo coincidono. Il motore li tratta comunque come
-concetti distinti: è nella realtà che divergono, non in questo caso.</p>
-
 <h2>3. Il modello di calcolo</h2>
 <p>Ogni passaggio della catena usa la propria base imponibile: non tutte le voci si calcolano
 sulla RAL.</p>
@@ -206,27 +207,25 @@ sulla RAL.</p>
     <tr><th>Voce</th><th>Base imponibile</th><th>Formula</th><th>Norma</th></tr>
   </thead>
   <tbody>
-    <tr><td>Contributi INPS c/dipendente</td><td>RAL</td><td>9,19% o 9,49%, +1% oltre 56.224 €</td><td>Circolare INPS n. 6 del 30/01/2026</td></tr>
-    <tr><td>Contributi INPS, apprendistato</td><td>RAL</td><td>5,84% flat, sostituisce l’aliquota standard</td><td>art. 21 c.6 L. 41/1986; msg. INPS n. 3618 del 17/10/2023</td></tr>
-    <tr><td>IRPEF lorda</td><td>Imponibile fiscale</td><td>23% / 33% / 43% per scaglioni</td><td>L. 30/12/2025 n. 199, art. 1 c.3</td></tr>
-    <tr><td>Detrazione lavoro dipendente</td><td>Reddito di riferimento</td><td>da 1.955 € a 0, decrescente da 15.000 a 50.000</td><td>art. 13 c.1, c.1.1, c.6 e c.6-bis TUIR</td></tr>
-    <tr><td>Ulteriore detrazione cuneo fiscale</td><td>Reddito complessivo</td><td>fino a 1.000 €, tra 20.000 e 40.000</td><td>L. 207/2024 art. 1 c.4-6</td></tr>
-    <tr><td>Detrazione coniuge a carico</td><td>Reddito complessivo</td><td>da 800 € a 0, tre fasce + micro-bonus</td><td>art. 12 TUIR (d.P.R. 917/1986)</td></tr>
-    <tr><td>Detrazione figli 21-30 a carico</td><td>Reddito complessivo</td><td>950 € per figlio, rapporto su base 95.000 €</td><td>art. 12 TUIR (d.P.R. 917/1986)</td></tr>
-    <tr><td>Detrazione altri familiari a carico</td><td>Reddito complessivo</td><td>750 € per familiare, rapporto su base 80.000 €</td><td>art. 12 TUIR (d.P.R. 917/1986)</td></tr>
-    <tr><td>Addizionale regionale</td><td>Imponibile fiscale</td><td>per regione: progressiva, flat, o soglia + flat</td><td>Leggi regionali 2025/2026 di ciascuna regione, art. 6 D.Lgs. 68/2011, art. 50 D.Lgs. 446/1997</td></tr>
-    <tr><td>Addizionale comunale</td><td>Imponibile fiscale</td><td>per comune: soglia di esenzione, poi scaglioni</td><td>Delibere comunali 2025/2026, art. 1 c.142-143 L. 296/2006</td></tr>
-    <tr><td>Trattamento integrativo</td><td>Reddito complessivo</td><td>1.200 € se ≤ 15.000 € e c’è capienza</td><td>D.L. 3/2020 conv. L. 21/2020, art. 1 c.1, come modificato da L. 207/2024 art. 1 c.3</td></tr>
-    <tr><td>Somma integrativa cuneo fiscale</td><td>Reddito di lavoro dipendente</td><td>7,1% / 5,3% / 4,8% se reddito ≤ 20.000 €</td><td>L. 207/2024 art. 1 c.4-6</td></tr>
-    <tr><td>Welfare / fringe benefit</td><td>Valore ricevuto</td><td>esente fino a 1.000–2.000 €, poi intero importo imponibile</td><td>art. 51 c.3 TUIR; L. 207/2024; circ. Agenzia Entrate n. 35/E del 04/11/2022</td></tr>
-    <tr><td>Contributi c/azienda</td><td>RAL</td><td>29,4% terziario o 32% industria</td><td>Circolare INPS n. 6 del 30/01/2026</td></tr>
-    <tr><td>TFR accantonato</td><td>RAL</td><td>RAL / 13,5</td><td>art. 2120 c.c.</td></tr>
+    <tr><td>Contributi INPS c/dipendente</td><td>RAL</td><td>9,19% o 9,49%, +1% oltre 56.224 €</td><td><a href="https://www.inps.it/it/it/inps-comunica/atti/circolari-messaggi-e-normativa/dettaglio.circolari-e-messaggi.2026.01.circolare-numero-6-del-30-01-2026_15151.html">Circolare INPS n. 6 del 30/01/2026</a></td></tr>
+    <tr><td>Contributi INPS, apprendistato</td><td>RAL</td><td>5,84% flat, sostituisce l’aliquota standard</td><td><a href="https://www.inps.it/it/it/inps-comunica/atti/circolari-messaggi-e-normativa/dettaglio.circolari-e-messaggi.2023.10.messaggio-numero-3618-del-17-10-2023_14297.html">art. 21 c.6 L. 41/1986; msg. INPS n. 3618 del 17/10/2023</a></td></tr>
+    <tr><td>IRPEF lorda</td><td>Imponibile fiscale</td><td>23% / 33% / 43% per scaglioni</td><td><a href="https://www.normattiva.it/eli/stato/LEGGE/2025/12/30/199/CONSOLIDATED">L. 30/12/2025 n. 199, art. 1 c.3</a></td></tr>
+    <tr><td>Detrazione lavoro dipendente</td><td>Reddito di riferimento</td><td>da 1.955 € a 0, decrescente da 15.000 a 50.000</td><td><a href="https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:decreto.del.presidente.della.repubblica:1986-12-22;917~art13!vig=">art. 13 c.1, c.1.1, c.6 e c.6-bis TUIR</a></td></tr>
+    <tr><td>Ulteriore detrazione cuneo fiscale</td><td>Reddito complessivo</td><td>fino a 1.000 €, tra 20.000 e 40.000</td><td><a href="https://www.agenziaentrate.gov.it/portale/documents/20143/8410823/Circolare+lavoro+dipendente+LB2025+DD+IRPEF+n.+4+del+16+maggio+2025.pdf/36979eaa-9fc5-a4ec-a7aa-136497c53f91">L. 207/2024 art. 1 c.4-6</a></td></tr>
+    <tr><td>Detrazione coniuge a carico</td><td>Reddito complessivo</td><td>da 800 € a 0, tre fasce + micro-bonus</td><td><a href="https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:decreto.del.presidente.della.repubblica:1986-12-22;917~art12!vig=">art. 12 TUIR (d.P.R. 917/1986)</a></td></tr>
+    <tr><td>Detrazione figli 21-30 a carico</td><td>Reddito complessivo</td><td>950 € per figlio, rapporto su base 95.000 €</td><td><a href="https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:decreto.del.presidente.della.repubblica:1986-12-22;917~art12!vig=">art. 12 TUIR (d.P.R. 917/1986)</a></td></tr>
+    <tr><td>Detrazione altri familiari a carico</td><td>Reddito complessivo</td><td>750 € per familiare, rapporto su base 80.000 €</td><td><a href="https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:decreto.del.presidente.della.repubblica:1986-12-22;917~art12!vig=">art. 12 TUIR (d.P.R. 917/1986)</a></td></tr>
+    <tr><td>Addizionale regionale</td><td>Imponibile fiscale</td><td>per regione: progressiva, flat, o soglia + flat</td><td><a href="https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/addregirpef/sceltaregione.htm">Leggi regionali 2025/2026 di ciascuna regione, art. 6 D.Lgs. 68/2011, art. 50 D.Lgs. 446/1997</a></td></tr>
+    <tr><td>Addizionale comunale</td><td>Imponibile fiscale</td><td>per comune: soglia di esenzione, poi scaglioni</td><td><a href="https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/nuova_addcomirpef/sceltaregione.htm">Delibere comunali 2025/2026, art. 1 c.142-143 L. 296/2006</a></td></tr>
+    <tr><td>Trattamento integrativo</td><td>Reddito complessivo</td><td>1.200 € se ≤ 15.000 € e c’è capienza</td><td><a href="https://www.agenziaentrate.gov.it/portale/documents/20143/8410823/Circolare+lavoro+dipendente+LB2025+DD+IRPEF+n.+4+del+16+maggio+2025.pdf/36979eaa-9fc5-a4ec-a7aa-136497c53f91">D.L. 3/2020 conv. L. 21/2020, art. 1 c.1, come modificato da L. 207/2024 art. 1 c.3</a></td></tr>
+    <tr><td>Somma integrativa cuneo fiscale</td><td>Reddito di lavoro dipendente</td><td>7,1% / 5,3% / 4,8% se reddito ≤ 20.000 €</td><td><a href="https://www.agenziaentrate.gov.it/portale/documents/20143/8410823/Circolare+lavoro+dipendente+LB2025+DD+IRPEF+n.+4+del+16+maggio+2025.pdf/36979eaa-9fc5-a4ec-a7aa-136497c53f91">L. 207/2024 art. 1 c.4-6</a></td></tr>
+    <tr><td>Welfare / fringe benefit</td><td>Valore ricevuto</td><td>esente fino a 1.000–2.000 €, poi intero importo imponibile</td><td><a href="https://www.agenziaentrate.gov.it/portale/documents/20143/4785312/circolare_welfare_aziendale_+n.+35+del+4+novembre+2022+.pdf/657de91b-6e75-2330-ce10-450e5f7a561b">art. 51 c.3 TUIR; L. 207/2024; circ. Agenzia Entrate n. 35/E del 04/11/2022</a></td></tr>
+    <tr><td>Contributi c/azienda</td><td>RAL</td><td>29,4% terziario o 32% industria</td><td><a href="https://www.inps.it/it/it/inps-comunica/atti/circolari-messaggi-e-normativa/dettaglio.circolari-e-messaggi.2026.01.circolare-numero-6-del-30-01-2026_15151.html">Circolare INPS n. 6 del 30/01/2026</a></td></tr>
+    <tr><td>TFR accantonato</td><td>RAL</td><td>RAL / 13,5</td><td><a href="https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:regio.decreto:1942-03-16;262:2~art2120!vig=">art. 2120 c.c.</a></td></tr>
   </tbody>
 </table>
 <p>Trattamento integrativo e somma integrativa <strong>si sommano</strong> al netto: non sono
 detrazioni che riducono l’imposta, sono credito erogato in busta paga.</p>
-
-<div class="page-break"></div>
 
 <h2>4. Parametri 2026</h2>
 
@@ -446,37 +445,6 @@ sanità con calcolatori pubblici indipendenti:</p>
 differenze nelle aliquote di dettaglio tra fonti indipendenti, non a un errore nella catena di
 calcolo. I calcolatori usati per il confronto sono citati qui come <em>benchmark</em>, non come
 fonte di alcun parametro: quelli vengono tutti da documenti istituzionali.</p>
-
-<h2>8. Fonti in sintesi</h2>
-<p>Elenco compatto: ogni riferimento è un link alla fonte. Il dettaglio con URL per esteso,
-ambito di utilizzo e data di consultazione è nel documento
-<strong>&laquo;Fonti normative&raquo;</strong> allegato. Le voci qui sono
-18 per 20 fonti del registro: tre fonti
-(somma integrativa, trattamento integrativo e circolare 4/E 2025) condividono lo stesso
-documento dell'Agenzia delle Entrate e compaiono una sola volta.</p>
-<table>
-  <thead><tr><th style="width:22%">Tipo</th><th>Riferimento</th></tr></thead>
-  <tbody>
-    <tr><td><span class="badge">Norma</span></td><td><a href="https://www.normattiva.it/eli/stato/LEGGE/2024/12/30/207/CONSOLIDATED">L. 30/12/2024 n. 207, art. 1</a></td></tr>
-    <tr><td><span class="badge">Norma</span></td><td><a href="https://www.normattiva.it/eli/stato/LEGGE/2025/12/30/199/CONSOLIDATED">L. 30/12/2025 n. 199, art. 1 c.3</a></td></tr>
-    <tr><td><span class="badge">Norma</span></td><td><a href="https://www.agenziaentrate.gov.it/portale/imposta-sul-reddito-delle-persone-fisiche-irpef-/aliquote-e-calcolo-dell-irpef">art. 11 TUIR (d.P.R. 917/1986)</a></td></tr>
-    <tr><td><span class="badge">Norma</span></td><td><a href="https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:decreto.del.presidente.della.repubblica:1986-12-22;917~art13!vig=">art. 13 c.1, c.1.1, c.6 e c.6-bis TUIR</a></td></tr>
-    <tr><td><span class="badge">Norma</span></td><td><a href="https://www.agenziaentrate.gov.it/portale/schede/comunicazioni/dati-relativi-ai-contributi-previdenziali-dal-2015-/normativa-daticontributiprevidenzialidal2015">art. 51 c.2 lett. a) TUIR</a></td></tr>
-    <tr><td><span class="badge">Prassi</span></td><td><a href="https://www.agenziaentrate.gov.it/portale/documents/20143/8410823/Circolare+lavoro+dipendente+LB2025+DD+IRPEF+n.+4+del+16+maggio+2025.pdf/36979eaa-9fc5-a4ec-a7aa-136497c53f91">Circolare Agenzia delle Entrate n. 4/E del 16/05/2025</a></td></tr>
-    <tr><td><span class="badge">Prassi</span></td><td><a href="https://www.agenziaentrate.gov.it/portale/documents/20143/4169770/Circolare+n.+4+del+18+febbraio+2022.pdf/a83fd984-2bc3-39a9-1e09-79e9a870d401">Circolare Agenzia delle Entrate n. 4/E del 18/02/2022</a></td></tr>
-    <tr><td><span class="badge">Atto locale</span></td><td><a href="https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/addregirpef/addregirpef.php?reg=10">art. 72 c.1 L.R. Lombardia 14/07/2003 n. 10</a></td></tr>
-    <tr><td><span class="badge">Atto locale</span></td><td><a href="https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/addregirpef/sceltaregione.htm">Leggi regionali 2025/2026 di ciascuna regione, art. 6 D.Lgs. 68/2011, art. 50 D.Lgs. 446/1997</a></td></tr>
-    <tr><td><span class="badge">Atto locale</span></td><td><a href="https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/addregirpef/addregirpef.php?reg=08&amp;anno=2026">L.R. Lazio 31/12/2025 n. 20, art. 2 c.2-3</a></td></tr>
-    <tr><td><span class="badge">Atto locale</span></td><td><a href="https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/addregirpef/addregirpef.php?reg=07&amp;anno=2026">L.R. Friuli-Venezia Giulia 25/07/2012 n. 14, art. 1 c.5</a></td></tr>
-    <tr><td><span class="badge">Atto locale</span></td><td><a href="https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/nuova_addcomirpef/sceltaregione.htm">Delibere comunali 2025/2026, art. 1 c.142-143 L. 296/2006</a></td></tr>
-    <tr><td><span class="badge">Atto locale</span></td><td><a href="https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/nuova_addcomirpef/risultato.htm?anno=9999&amp;pr=MI&amp;cc=F205&amp;r=1">Delibera Comune di Milano n. 46 del 28/09/2020</a></td></tr>
-    <tr><td><span class="badge">Prassi</span></td><td><a href="https://www.inps.it/it/it/inps-comunica/atti/circolari-messaggi-e-normativa/dettaglio.circolari-e-messaggi.2026.01.circolare-numero-6-del-30-01-2026_15151.html">Circolare INPS n. 6 del 30/01/2026</a></td></tr>
-    <tr><td><span class="badge">Norma</span></td><td><a href="https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:decreto.del.presidente.della.repubblica:1986-12-22;917~art12!vig=">art. 12 TUIR (d.P.R. 917/1986)</a></td></tr>
-    <tr><td><span class="badge">Prassi</span></td><td><a href="https://www.agenziaentrate.gov.it/portale/documents/20143/4785312/circolare_welfare_aziendale_+n.+35+del+4+novembre+2022+.pdf/657de91b-6e75-2330-ce10-450e5f7a561b">art. 51 c.3 TUIR; L. 207/2024; circ. Agenzia Entrate n. 35/E del 04/11/2022</a></td></tr>
-    <tr><td><span class="badge">Prassi</span></td><td><a href="https://www.inps.it/it/it/inps-comunica/atti/circolari-messaggi-e-normativa/dettaglio.circolari-e-messaggi.2023.10.messaggio-numero-3618-del-17-10-2023_14297.html">art. 21 c.6 L. 41/1986; msg. INPS n. 3618 del 17/10/2023</a></td></tr>
-    <tr><td><span class="badge">Norma</span></td><td><a href="https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:regio.decreto:1942-03-16;262:2~art2120!vig=">art. 2120 c.c.</a></td></tr>
-  </tbody>
-</table>
 
 </body>
 </html>

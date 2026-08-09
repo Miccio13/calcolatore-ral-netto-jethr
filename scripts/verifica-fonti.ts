@@ -25,10 +25,15 @@ const RADICE = resolve(__dirname, '..')
 /** Pagine che rispondono 200 ma non contengono il documento richiesto. */
 const MARCATORI_DI_ERRORE = ['Errore nel caricamento delle informazioni', 'Normattiva - Errore']
 
-const PDF_ATTESI = [
-  'docs/Jet-HR_Calcolatore-RAL-Netto_Metodologia.pdf',
-  'docs/Jet-HR_Calcolatore-RAL-Netto_Fonti.pdf',
-  'docs/Jet-HR_Calcolatore-RAL-Netto_Fonti-Semplice.pdf',
+/**
+ * Minimo di link cliccabili per documento. I due PDF fonti citano ogni fonte
+ * del registro; la metodologia, senza più la sezione «Fonti in sintesi», linka
+ * le norme dalla tabella del modello di calcolo: 15 righe.
+ */
+const PDF_ATTESI: { percorso: string; minimoLink: number }[] = [
+  { percorso: 'docs/Jet-HR_Calcolatore-RAL-Netto_Metodologia.pdf', minimoLink: 15 },
+  { percorso: 'docs/Jet-HR_Calcolatore-RAL-Netto_Fonti.pdf', minimoLink: Object.keys(FONTI).length },
+  { percorso: 'docs/Jet-HR_Calcolatore-RAL-Netto_Fonti-Semplice.pdf', minimoLink: Object.keys(FONTI).length },
 ]
 
 type Esito = { ok: boolean; messaggio: string }
@@ -73,20 +78,19 @@ async function main(): Promise<void> {
   })
 
   console.log('\nPDF — link cliccabili\n')
-  for (const pdf of PDF_ATTESI) {
+  for (const { percorso, minimoLink } of PDF_ATTESI) {
     let link = 0
     try {
-      link = contaLinkNelPdf(pdf)
+      link = contaLinkNelPdf(percorso)
     } catch {
-      console.log(`  ✗ ${pdf} — non trovato, rigenera con ./scripts/genera-pdf.sh`)
+      console.log(`  ✗ ${percorso} — non trovato, rigenera con ./scripts/genera-pdf.sh`)
       problemi++
       continue
     }
-    // Ogni fonte deve comparire almeno una volta come link in ciascun documento:
-    // sotto questa soglia qualcosa è tornato a essere testo morto.
-    const ok = link >= fonti.length
+    // Sotto la soglia del documento qualcosa è tornato a essere testo morto.
+    const ok = link >= minimoLink
     if (!ok) problemi++
-    console.log(`  ${ok ? '✓' : '✗'} ${pdf} — ${link} link (attesi almeno ${fonti.length})`)
+    console.log(`  ${ok ? '✓' : '✗'} ${percorso} — ${link} link (attesi almeno ${minimoLink})`)
   }
 
   if (problemi > 0) {
