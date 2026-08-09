@@ -17,6 +17,13 @@ export const DETRAZIONE_LAVORO_DIPENDENTE_2026 = {
   sogliaBassa: 15_000,
   sogliaAlta: 50_000,
   puntoIntermedio: 28_000,
+  // Art. 13 c.1.1 TUIR (introdotto dalla L. 234/2021): correttivo in aumento,
+  // spetta per intero senza ragguaglio al periodo di lavoro (circ. AdE 4/E 2022).
+  maggiorazione: {
+    importo: 65,
+    redditoOltre: 25_000,
+    redditoFinoA: 35_000,
+  },
 } as const
 
 export const DETRAZIONE_CONIUGE_2026 = {

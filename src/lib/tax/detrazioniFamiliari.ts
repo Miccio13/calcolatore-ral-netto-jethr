@@ -6,13 +6,15 @@ import {
 } from './constants-2026'
 import { FONTI } from './fonti'
 import { rapportaAlPeriodo } from './periodo'
+import { troncaRapporto } from './rapporto'
 import type { VoceBreakdown } from './types'
 
 /**
  * Detrazione per coniuge a carico, art. 12 c.1 lett. a)+b) TUIR (testo letto
  * integralmente su Normattiva/Agenzia Entrate). Tre fasce più un micro-bonus
  * storico su una fascia di reddito molto stretta (lett. b). Rapportata al
- * periodo di lavoro nell'anno (c.3).
+ * periodo di lavoro nell'anno (c.3). I rapporti si assumono nelle prime quattro
+ * cifre decimali (c.4): troncamento, non arrotondamento.
  *
  * Semplificazione dichiarata: non gestiamo il caso limite reddito complessivo
  * esattamente 0 (art. 12 c.4, "detrazione non compete" quando il rapporto è
@@ -32,14 +34,16 @@ export function calcolaDetrazioneConiuge(
 
   if (aCarico) {
     if (redditoComplessivo <= sogliaBassa) {
-      importoAnnuo = baseFasciaBassa - coefficienteFasciaBassa * (redditoComplessivo / sogliaBassa)
-      formula = `800 − 110 × (${formatNumero(redditoComplessivo)} / 15.000) = ${importoAnnuo.toFixed(2)}`
+      importoAnnuo =
+        baseFasciaBassa - coefficienteFasciaBassa * troncaRapporto(redditoComplessivo / sogliaBassa)
+      formula = `800 − 110 × (${formatNumero(redditoComplessivo)} / 15.000, troncato a 4 decimali) = ${importoAnnuo.toFixed(2)}`
     } else if (redditoComplessivo <= sogliaMedia) {
       importoAnnuo = fisso
       formula = `fisso 690 (reddito 15.000-40.000)`
     } else if (redditoComplessivo <= sogliaAlta) {
-      importoAnnuo = fisso * ((sogliaAlta - redditoComplessivo) / (sogliaAlta - sogliaMedia))
-      formula = `690 × [(80.000 − ${formatNumero(redditoComplessivo)}) / 40.000] = ${importoAnnuo.toFixed(2)}`
+      importoAnnuo =
+        fisso * troncaRapporto((sogliaAlta - redditoComplessivo) / (sogliaAlta - sogliaMedia))
+      formula = `690 × [(80.000 − ${formatNumero(redditoComplessivo)}) / 40.000, troncato a 4 decimali] = ${importoAnnuo.toFixed(2)}`
     }
 
     const bonus = microBonus.find((b) => redditoComplessivo > b.da && redditoComplessivo <= b.a)
@@ -96,7 +100,7 @@ export function calcolaDetrazioneFigli(
   }
 
   const base = baseRapporto + incrementoBasePerFiglioSuccessivo * (numeroFigli - 1)
-  const rapporto = Math.max(0, (base - redditoComplessivo) / base)
+  const rapporto = Math.max(0, troncaRapporto((base - redditoComplessivo) / base))
   const importoAnnuo = importoBase * numeroFigli * rapporto * (quotaPercentuale / 100)
   const importo = rapportaAlPeriodo(importoAnnuo, giorniLavorati)
 
@@ -106,7 +110,7 @@ export function calcolaDetrazioneFigli(
     importo,
     segno: 'aggiunta',
     percentualeRal: redditoComplessivo > 0 ? importo / redditoComplessivo : 0,
-    formula: `950 × ${numeroFigli} × [(${formatNumero(base)} − ${formatNumero(redditoComplessivo)}) / ${formatNumero(base)}] × ${quotaPercentuale}% = ${importoAnnuo.toFixed(2)}`,
+    formula: `950 × ${numeroFigli} × [(${formatNumero(base)} − ${formatNumero(redditoComplessivo)}) / ${formatNumero(base)}, troncato a 4 decimali] × ${quotaPercentuale}% = ${importoAnnuo.toFixed(2)}`,
     fonte: FONTI.tuirArt12,
   }
 }
@@ -139,7 +143,7 @@ export function calcolaDetrazioneAltriFamiliari(
     }
   }
 
-  const rapporto = Math.max(0, (baseRapporto - redditoComplessivo) / baseRapporto)
+  const rapporto = Math.max(0, troncaRapporto((baseRapporto - redditoComplessivo) / baseRapporto))
   const importoAnnuo = importoBase * numero * rapporto
   const importo = rapportaAlPeriodo(importoAnnuo, giorniLavorati)
 
@@ -149,7 +153,7 @@ export function calcolaDetrazioneAltriFamiliari(
     importo,
     segno: 'aggiunta',
     percentualeRal: redditoComplessivo > 0 ? importo / redditoComplessivo : 0,
-    formula: `750 × ${numero} × [(80.000 − ${formatNumero(redditoComplessivo)}) / 80.000] = ${importoAnnuo.toFixed(2)}`,
+    formula: `750 × ${numero} × [(80.000 − ${formatNumero(redditoComplessivo)}) / 80.000, troncato a 4 decimali] = ${importoAnnuo.toFixed(2)}`,
     fonte: FONTI.tuirArt12,
   }
 }

@@ -5,14 +5,18 @@ import {
   calcolaDetrazioneFigli,
 } from '../detrazioniFamiliari'
 
+// Art. 12 c.4 TUIR: il risultato dei rapporti si assume nelle prime quattro
+// cifre decimali — replicato negli attesi.
+const tronca = (r: number) => Math.trunc(r * 10_000) / 10_000
+
 describe('calcolaDetrazioneConiuge', () => {
   it('è zero se il coniuge non è a carico', () => {
     expect(calcolaDetrazioneConiuge(false, 30_000, 365).importo).toBe(0)
   })
 
-  it('prima fascia (≤15.000): 800 - 110 × rapporto', () => {
+  it('prima fascia (≤15.000): 800 - 110 × rapporto (troncato a 4 decimali, art. 12 c.4)', () => {
     const r = calcolaDetrazioneConiuge(true, 10_000, 365)
-    const atteso = 800 - 110 * (10_000 / 15_000)
+    const atteso = 800 - 110 * tronca(10_000 / 15_000)
     expect(r.importo).toBeCloseTo(atteso, 6)
   })
 
@@ -52,9 +56,9 @@ describe('calcolaDetrazioneFigli', () => {
     expect(calcolaDetrazioneFigli(0, 100, 30_000, 365).importo).toBe(0)
   })
 
-  it('un figlio, quota 100%, reddito basso: vicino al massimo 950', () => {
+  it('un figlio, quota 100%, reddito basso: vicino al massimo 950 (rapporto troncato)', () => {
     const r = calcolaDetrazioneFigli(1, 100, 10_000, 365)
-    const atteso = 950 * ((95_000 - 10_000) / 95_000)
+    const atteso = 950 * tronca((95_000 - 10_000) / 95_000)
     expect(r.importo).toBeCloseTo(atteso, 6)
   })
 
@@ -67,7 +71,7 @@ describe('calcolaDetrazioneFigli', () => {
   it('con più figli la base del rapporto cresce di 15.000 per figlio successivo al primo', () => {
     const r = calcolaDetrazioneFigli(2, 100, 30_000, 365)
     const base = 95_000 + 15_000
-    const atteso = 950 * 2 * ((base - 30_000) / base)
+    const atteso = 950 * 2 * tronca((base - 30_000) / base)
     expect(r.importo).toBeCloseTo(atteso, 6)
   })
 
