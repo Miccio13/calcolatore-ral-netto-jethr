@@ -16,8 +16,15 @@ const nextConfig: NextConfig = {
   // I file sono serviti sotto /AI-builder-jethr/_next/... (basePath sposta
   // anche il file serving), quindi assetPrefix deve includere lo stesso
   // prefisso esplicitamente.
+  //
+  // Solo in produzione: in `next dev` un assetPrefix assoluto farebbe scaricare
+  // al browser i chunk dal dominio deployato invece che da localhost, e si
+  // finirebbe a testare la build online credendo di testare le modifiche locali.
   basePath: '/AI-builder-jethr',
-  assetPrefix: 'https://calcolatore-ral-netto-jethr.vercel.app/AI-builder-jethr',
+  assetPrefix:
+    process.env.NODE_ENV === 'production'
+      ? 'https://calcolatore-ral-netto-jethr.vercel.app/AI-builder-jethr'
+      : undefined,
   turbopack: {
     root: path.resolve(__dirname),
   },
