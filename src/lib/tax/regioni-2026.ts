@@ -6,7 +6,7 @@ import type { Scaglione } from './progressive'
  * regione (`addregirpef.php?reg=N`), consultato nel 2026. Vedi FONTI.addizionaliRegionali2026
  * e FONTI.addizionaleRegionaleLombardia (quest'ultima con fonte e verifica dedicate).
  *
- * Tre meccaniche distinte, verificate sui testi restituiti dal tool:
+ * Cinque meccaniche distinte, verificate sui testi restituiti dal tool:
  * - `progressivo`: aliquota diversa per scaglione, applicata in modo marginale
  *   come l'IRPEF nazionale (obbligo di legge, art. 6 D.Lgs. 68/2011, per le
  *   regioni che differenziano l'aliquota per fascia di reddito)
@@ -15,6 +15,15 @@ import type { Scaglione } from './progressive'
  *   reddito sopra soglia (non marginale) — verificato esplicitamente per la
  *   Valle d'Aosta, stesso meccanismo già confermato per l'addizionale
  *   comunale di Milano
+ * - `fasceIntere`: l'aliquota della fascia di appartenenza si applica
+ *   sull'intero imponibile, non solo alla quota nella fascia — è il regime
+ *   del Friuli-Venezia Giulia ("l'aliquota è ridotta dello 0,53%" per i
+ *   redditi fino a 15.000, testuale dal prospetto DF 2026)
+ * - `progressivoConClausola`: scaglioni marginali, ma sotto una soglia di
+ *   imponibile vale un'aliquota unica sull'intero; opzionale una detrazione
+ *   fissa su una fascia di raccordo — è il regime del Lazio 2026
+ *   (LR 20/31.12.2025, art. 2 c.2-3: 1,73% per imponibili ≤28.000,
+ *   detrazione di 60 € tra 28.000 e 30.000)
  *
  * Semplificazione dichiarata: nessuna delle detrazioni/agevolazioni regionali
  * per figli a carico, disabilità o altre condizioni specifiche menzionate da
@@ -28,6 +37,13 @@ export type RegioneAddizionale =
   | { tipo: 'progressivo'; scaglioni: ScaglioneRegionale[] }
   | { tipo: 'flat'; aliquota: number }
   | { tipo: 'sogliaFlat'; soglia: number; aliquota: number }
+  | { tipo: 'fasceIntere'; fasce: { finoA: number; aliquota: number }[] }
+  | {
+      tipo: 'progressivoConClausola'
+      clausola: { imponibileFinoA: number; aliquota: number }
+      scaglioni: ScaglioneRegionale[]
+      detrazione?: { da: number; a: number; importo: number }
+    }
 
 export type Regione = {
   id: string
@@ -91,10 +107,10 @@ export const REGIONI_2026: Regione[] = [
     id: 'friuli-venezia-giulia',
     nome: 'Friuli Venezia Giulia',
     addizionale: {
-      tipo: 'progressivo',
-      scaglioni: [
-        { da: 0, a: 15_000, aliquota: 0.007 },
-        { da: 15_000, a: Infinity, aliquota: 0.0123 },
+      tipo: 'fasceIntere',
+      fasce: [
+        { finoA: 15_000, aliquota: 0.007 },
+        { finoA: Infinity, aliquota: 0.0123 },
       ],
     },
   },
@@ -102,11 +118,13 @@ export const REGIONI_2026: Regione[] = [
     id: 'lazio',
     nome: 'Lazio',
     addizionale: {
-      tipo: 'progressivo',
+      tipo: 'progressivoConClausola',
+      clausola: { imponibileFinoA: 28_000, aliquota: 0.0173 },
       scaglioni: [
         { da: 0, a: 15_000, aliquota: 0.0173 },
         { da: 15_000, a: Infinity, aliquota: 0.0333 },
       ],
+      detrazione: { da: 28_000, a: 30_000, importo: 60 },
     },
   },
   {
