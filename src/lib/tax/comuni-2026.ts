@@ -19,6 +19,8 @@ import type { Scaglione } from './progressive'
 export type Comune = {
   id: string
   nome: string
+  /** Id in REGIONI_2026: la UI filtra i comuni sulla regione selezionata. */
+  regioneId: string
   soglia: number
   scaglioni: Scaglione[]
 }
@@ -27,24 +29,28 @@ export const COMUNI_2026: Comune[] = [
   {
     id: 'milano',
     nome: 'Milano',
+    regioneId: 'lombardia',
     soglia: 23_000,
     scaglioni: [{ da: 0, a: Infinity, aliquota: 0.008 }],
   },
   {
     id: 'roma',
     nome: 'Roma',
+    regioneId: 'lazio',
     soglia: 14_000,
     scaglioni: [{ da: 0, a: Infinity, aliquota: 0.009 }],
   },
   {
     id: 'napoli',
     nome: 'Napoli',
+    regioneId: 'campania',
     soglia: 12_000,
     scaglioni: [{ da: 0, a: Infinity, aliquota: 0.01 }],
   },
   {
     id: 'torino',
     nome: 'Torino',
+    regioneId: 'piemonte',
     soglia: 11_790,
     scaglioni: [
       { da: 0, a: 28_000, aliquota: 0.008 },
@@ -55,6 +61,7 @@ export const COMUNI_2026: Comune[] = [
   {
     id: 'genova',
     nome: 'Genova',
+    regioneId: 'liguria',
     soglia: 14_000,
     scaglioni: [
       { da: 0, a: 28_000, aliquota: 0.01 },
@@ -65,36 +72,42 @@ export const COMUNI_2026: Comune[] = [
   {
     id: 'bologna',
     nome: 'Bologna',
+    regioneId: 'emilia-romagna',
     soglia: 15_000,
     scaglioni: [{ da: 0, a: Infinity, aliquota: 0.008 }],
   },
   {
     id: 'firenze',
     nome: 'Firenze',
+    regioneId: 'toscana',
     soglia: 25_000,
     scaglioni: [{ da: 0, a: Infinity, aliquota: 0.002 }],
   },
   {
     id: 'palermo',
     nome: 'Palermo',
+    regioneId: 'sicilia',
     soglia: 0,
     scaglioni: [{ da: 0, a: Infinity, aliquota: 0.0103 }],
   },
   {
     id: 'bari',
     nome: 'Bari',
+    regioneId: 'puglia',
     soglia: 15_000,
     scaglioni: [{ da: 0, a: Infinity, aliquota: 0.008 }],
   },
   {
     id: 'venezia',
     nome: 'Venezia',
+    regioneId: 'veneto',
     soglia: 10_000,
     scaglioni: [{ da: 0, a: Infinity, aliquota: 0.008 }],
   },
   {
     id: 'cagliari',
     nome: 'Cagliari',
+    regioneId: 'sardegna',
     soglia: 10_000,
     scaglioni: [
       { da: 0, a: 15_000, aliquota: 0.0066 },

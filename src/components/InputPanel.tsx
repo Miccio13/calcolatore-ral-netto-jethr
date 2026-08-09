@@ -231,7 +231,21 @@ export function InputPanel({ input, onCalcola, risultati }: Props) {
           <Campo label="Regione">
             <select
               value={regioneId}
-              onChange={(e) => setRegioneId(e.target.value)}
+              onChange={(e) => {
+                const nuovaRegioneId = e.target.value
+                setRegioneId(nuovaRegioneId)
+                // La select comune mostra solo i comuni della regione: un preset
+                // fuori regione va resettato, altrimenti il browser cade sulla
+                // prima option visibile mentre lo stato React resta sul vecchio
+                // comune. "Altro comune" invece sopravvive a ogni regione.
+                if (comuneId !== COMUNE_PERSONALIZZATO) {
+                  const comuneAttuale = COMUNI_2026.find((c) => c.id === comuneId)
+                  if (comuneAttuale?.regioneId !== nuovaRegioneId) {
+                    const primoComune = COMUNI_2026.find((c) => c.regioneId === nuovaRegioneId)
+                    setComuneId(primoComune?.id ?? COMUNE_PERSONALIZZATO)
+                  }
+                }
+              }}
               className={selectClass}
             >
               {REGIONI_2026.map((r) => (
@@ -249,7 +263,7 @@ export function InputPanel({ input, onCalcola, risultati }: Props) {
               onChange={(e) => setComuneId(e.target.value)}
               className={selectClass}
             >
-              {COMUNI_2026.map((c) => (
+              {COMUNI_2026.filter((c) => c.regioneId === regioneId).map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.nome}
                   {c.id === 'milano' ? ' (default)' : ''}
