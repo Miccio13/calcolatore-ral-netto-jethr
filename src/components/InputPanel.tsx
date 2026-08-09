@@ -188,7 +188,7 @@ export function InputPanel({ input, onCalcola, risultati }: Props) {
               onChange={(e) => setTipoContratto(e.target.value as TipoContratto)}
               className={selectClass}
             >
-              <option value="standard">Tempo indeterminato (default)</option>
+              <option value="standard">Tempo indeterminato</option>
               <option value="apprendistato">Apprendistato</option>
             </select>
           </Campo>
@@ -200,7 +200,7 @@ export function InputPanel({ input, onCalcola, risultati }: Props) {
               disabled={tipoContratto === 'apprendistato'}
               className={selectClass}
             >
-              <option value={0.0919}>9,19% (default)</option>
+              <option value={0.0919}>9,19%</option>
               <option value={0.0949}>9,49% (azienda &gt;15 dip.)</option>
             </select>
             {tipoContratto === 'apprendistato' && (
@@ -217,7 +217,7 @@ export function InputPanel({ input, onCalcola, risultati }: Props) {
               className={selectClass}
             >
               <option value={12}>12</option>
-              <option value={13}>13 (default)</option>
+              <option value={13}>13</option>
               <option value={14}>14</option>
             </select>
           </Campo>
@@ -234,16 +234,17 @@ export function InputPanel({ input, onCalcola, risultati }: Props) {
               onChange={(e) => {
                 const nuovaRegioneId = e.target.value
                 setRegioneId(nuovaRegioneId)
-                // La select comune mostra solo i comuni della regione: un preset
-                // fuori regione va resettato, altrimenti il browser cade sulla
-                // prima option visibile mentre lo stato React resta sul vecchio
-                // comune. "Altro comune" invece sopravvive a ogni regione.
-                if (comuneId !== COMUNE_PERSONALIZZATO) {
-                  const comuneAttuale = COMUNI_2026.find((c) => c.id === comuneId)
-                  if (comuneAttuale?.regioneId !== nuovaRegioneId) {
-                    const primoComune = COMUNI_2026.find((c) => c.regioneId === nuovaRegioneId)
-                    setComuneId(primoComune?.id ?? COMUNE_PERSONALIZZATO)
-                  }
+                // Cambiare regione riparte sempre dal capoluogo disponibile:
+                // anche da "Altro comune", che resta selezionato solo dove non
+                // ci sono preset. Un preset fuori regione non può sopravvivere,
+                // altrimenti il browser cadrebbe sulla prima option visibile
+                // mentre lo stato React resta sul vecchio comune. I campi
+                // dell'aliquota personalizzata non si azzerano: ci si ritorna
+                // riselezionando "Altro comune".
+                const comuneAttuale = COMUNI_2026.find((c) => c.id === comuneId)
+                if (comuneAttuale?.regioneId !== nuovaRegioneId) {
+                  const primoComune = COMUNI_2026.find((c) => c.regioneId === nuovaRegioneId)
+                  setComuneId(primoComune?.id ?? COMUNE_PERSONALIZZATO)
                 }
               }}
               className={selectClass}
@@ -251,7 +252,6 @@ export function InputPanel({ input, onCalcola, risultati }: Props) {
               {REGIONI_2026.map((r) => (
                 <option key={r.id} value={r.id}>
                   {r.nome}
-                  {r.id === 'lombardia' ? ' (default)' : ''}
                 </option>
               ))}
             </select>
@@ -266,7 +266,6 @@ export function InputPanel({ input, onCalcola, risultati }: Props) {
               {COMUNI_2026.filter((c) => c.regioneId === regioneId).map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.nome}
-                  {c.id === 'milano' ? ' (default)' : ''}
                 </option>
               ))}
               <option value={COMUNE_PERSONALIZZATO}>Altro comune (inserisci aliquota)</option>
@@ -315,7 +314,7 @@ export function InputPanel({ input, onCalcola, risultati }: Props) {
               onChange={(e) => setConiugeACarico(e.target.value === 'si')}
               className={selectClass}
             >
-              <option value="no">No (default)</option>
+              <option value="no">No</option>
               <option value="si">Sì</option>
             </select>
           </Campo>
@@ -331,7 +330,7 @@ export function InputPanel({ input, onCalcola, risultati }: Props) {
               disabled={numeroFigli === 0}
               className={selectClass}
             >
-              <option value={100}>100% (default)</option>
+              <option value={100}>100%</option>
               <option value={50}>50%</option>
             </select>
           </Campo>
@@ -367,7 +366,7 @@ export function InputPanel({ input, onCalcola, risultati }: Props) {
                 onChange={(e) => setSettore(e.target.value as Settore)}
                 className={selectClass}
               >
-                <option value="terziario">Terziario (default)</option>
+                <option value="terziario">Terziario</option>
                 <option value="industria">Industria</option>
               </select>
             </Campo>
