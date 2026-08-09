@@ -358,9 +358,9 @@ soglia inserite a mano. Sotto, la combinazione di default:</p>
 
   <li><strong>Il netto mensile dipende dalle mensilità del CCNL.</strong> Su una RAL di
   35.000 €, con 12 mensilità il netto mensile è
-  <span class="accent">2.164 €</span>, con 14 è
-  <span class="accent">1.855 €</span> — a parità di netto
-  annuo (25.967 €), cambia solo la ripartizione. Dividere
+  <span class="accent">2.169 €</span>, con 14 è
+  <span class="accent">1.859 €</span> — a parità di netto
+  annuo (26.032 €), cambia solo la ripartizione. Dividere
   sempre per 12 produce un numero sbagliato.</li>
 
   <li><strong>Appena sopra i 15.000 € di reddito il netto annuo può scendere pur salendo la
@@ -368,16 +368,16 @@ soglia inserite a mano. Sotto, la combinazione di default:</p>
   a circa 3.100 €, ma si perde interamente il trattamento integrativo di 1.200 €, che è una
   soglia netta e non un importo decrescente. Esempio dal motore, a cavallo della soglia:
   netto <span class="accent">15.314,76 €</span> appena sotto,
-  netto <span class="accent">15.186,15 €</span> appena sopra —
-  128,62 € in meno a
+  netto <span class="accent">15.186,11 €</span> appena sopra —
+  128,65 € in meno a
   fronte di 2 € di RAL in più. Scoperto scrivendo i test del motore, non ipotizzato a tavolino.</li>
 
   <li><strong>Il welfare ha lo stesso meccanismo a soglia delle addizionali comunali</strong>,
   e va nella direzione opposta a quella intuitiva: un euro di fringe benefit in più, oltre la
   soglia, rende imponibile l’intero importo. Con 1.000 € di
-  welfare il netto annuo è <span class="accent">26.967 €</span>;
+  welfare il netto annuo è <span class="accent">27.032 €</span>;
   con 1.001 € scende a
-  <span class="accent">26.428 €</span>.</li>
+  <span class="accent">26.493 €</span>.</li>
 </ol>
 
 <h2>6. Semplificazioni e limiti</h2>
@@ -429,7 +429,7 @@ soglia inserite a mano. Sotto, la combinazione di default:</p>
 </table>
 
 <h2>7. Validazione</h2>
-<p>Il motore è coperto da <strong>121 test automatici</strong>: unitari per ogni
+<p>Il motore è coperto da <strong>131 test automatici</strong>: unitari per ogni
 modulo, end-to-end sui casi tipici, continuità sui valori di soglia, più un test che verifica
 che ogni fonte citata appartenga a un dominio istituzionale. In aggiunta, un confronto di
 sanità con calcolatori pubblici indipendenti:</p>
@@ -438,7 +438,7 @@ sanità con calcolatori pubblici indipendenti:</p>
     <tr><th>RAL</th><th class="num">Netto atteso</th><th class="num">Netto calcolato</th><th class="num">Scarto</th><th>Fonte del confronto</th></tr>
   </thead>
   <tbody>
-    <tr><td class="nowrap">35.000 €</td><td class="num">25.968 €</td><td class="num">25.967 €</td><td class="num">sotto 0,01%</td><td class="muted">stipendionettocalcolatore.it — ral-35000-netto-2026</td></tr>
+    <tr><td class="nowrap">35.000 €</td><td class="num">25.968 €</td><td class="num">26.032 €</td><td class="num">+0,25%</td><td class="muted">stipendionettocalcolatore.it — ral-35000-netto-2026</td></tr>
     <tr><td class="nowrap">60.000 €</td><td class="num">37.621 €</td><td class="num">37.555 €</td><td class="num">−0,18%</td><td class="muted">stipendionettocalcolatore.it — ral-60000-netto</td></tr>
   </tbody>
 </table>
