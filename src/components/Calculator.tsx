@@ -7,7 +7,6 @@ import { calcola } from '@/lib/tax/calcola'
 import { INPUT_DEFAULT } from '@/lib/tax/types'
 import type { Input } from '@/lib/tax/types'
 import { AnimatedEuro } from './AnimatedEuro'
-import { ComeSiCalcola } from './ComeSiCalcola'
 import { CostoAziendaSection } from './CostoAziendaSection'
 import { InputPanel } from './InputPanel'
 import { Waterfall } from './Waterfall'
@@ -41,9 +40,9 @@ export function Calculator() {
         />
         <div>
           <p className="text-xs font-medium text-muted uppercase tracking-wide">
-            Jet HR — prototipo Product Builder
+            Jet HR · prototipo Product Builder
           </p>
-          <h1 className="text-xl sm:text-2xl font-semibold text-ink">Calcolatore RAL → Netto</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold text-ink">Calcolatore RAL Netto</h1>
         </div>
       </header>
 
@@ -132,11 +131,9 @@ export function Calculator() {
 
         <CostoAziendaSection costoAzienda={risultato.costoAzienda} />
 
-        <ComeSiCalcola />
-
         <footer className="text-xs text-muted text-center pt-4">
-          Prototipo per anno d&apos;imposta 2026, Comune di Milano. Semplificazioni dichiarate nella
-          sezione &quot;Come si calcola&quot;. Non costituisce consulenza fiscale.
+          Prototipo per anno d&apos;imposta 2026, Comune di Milano. Non costituisce consulenza
+          fiscale.
         </footer>
       </div>
     </main>

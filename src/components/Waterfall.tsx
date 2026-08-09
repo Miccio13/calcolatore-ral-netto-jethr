@@ -58,7 +58,7 @@ function WaterfallRow({ voce, base }: { voce: VoceBreakdown; base: number }) {
         <div className="mt-3 mx-2 rounded-2xl bg-cream p-4 text-sm text-muted space-y-2">
           <p className="font-mono text-xs text-ink/70 break-words">{voce.formula}</p>
           <p>
-            <span className="font-medium text-ink">{voce.fonte.norma}</span> — {voce.fonte.descrizione}
+            <span className="font-medium text-ink">{voce.fonte.norma}</span> · {voce.fonte.descrizione}
           </p>
           <a
             href={voce.fonte.url}

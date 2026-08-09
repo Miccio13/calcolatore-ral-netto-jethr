@@ -57,7 +57,7 @@ export const FONTI: Record<string, Fonte> = {
     id: 'tuirArt13',
     norma: 'art. 13 c.1, c.1.1, c.6 e c.6-bis TUIR',
     descrizione:
-      'Detrazione per redditi di lavoro dipendente, decrescente e azzerata a 50.000 €; il reddito di riferimento è il reddito complessivo al netto dell\'abitazione principale. Il c.1.1 aggiunge 65 € per redditi tra 25.000 e 35.000; il c.6 prescrive che il rapporto delle formule si assuma nelle prime quattro cifre decimali (troncamento); il minimo di 690 € (1.380 € per il tempo determinato) vale nel solo primo scaglione. Link al testo vigente su Normattiva — il PDF statico dell\'Agenzia delle Entrate citato in precedenza riportava la versione 2008 dell\'articolo.',
+      'Detrazione per redditi di lavoro dipendente, decrescente e azzerata a 50.000 €; il reddito di riferimento è il reddito complessivo al netto dell\'abitazione principale. Il c.1.1 aggiunge 65 € per redditi tra 25.000 e 35.000; il c.6 prescrive che il rapporto delle formule si assuma nelle prime quattro cifre decimali (troncamento); il minimo di 690 € (1.380 € per il tempo determinato) vale nel solo primo scaglione. Link al testo vigente su Normattiva: il PDF statico dell\'Agenzia delle Entrate citato in precedenza riportava la versione 2008 dell\'articolo.',
     url: 'https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:decreto.del.presidente.della.repubblica:1986-12-22;917~art13!vig=',
     tipo: 'norma',
   },
@@ -137,7 +137,7 @@ export const FONTI: Record<string, Fonte> = {
     id: 'addizionaliComunali2026',
     norma: 'Delibere comunali 2025/2026, art. 1 c.142-143 L. 296/2006',
     descrizione:
-      'Addizionale comunale IRPEF di 11 capoluoghi (Milano, Roma, Napoli, Torino, Genova, Bologna, Firenze, Palermo, Bari, Venezia, Cagliari), ciascuno verificato singolarmente sul tool di ricerca del Dipartimento delle Finanze con il codice catastale del comune. Copertura parziale e dichiarata: l\'Italia ha oltre 8.000 comuni, nessun dataset bulk scaricabile è stato trovato sul sito del Dip. Finanze — per i comuni non elencati il calcolatore offre l\'inserimento manuale di aliquota e soglia.',
+      'Addizionale comunale IRPEF di 11 capoluoghi (Milano, Roma, Napoli, Torino, Genova, Bologna, Firenze, Palermo, Bari, Venezia, Cagliari), ciascuno verificato singolarmente sul tool di ricerca del Dipartimento delle Finanze con il codice catastale del comune. Copertura parziale e dichiarata: l\'Italia ha oltre 8.000 comuni, nessun dataset bulk scaricabile è stato trovato sul sito del Dip. Finanze; per i comuni non elencati il calcolatore offre l\'inserimento manuale di aliquota e soglia.',
     url: 'https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/nuova_addcomirpef/sceltaregione.htm',
     tipo: 'atto-locale',
   },
@@ -161,7 +161,7 @@ export const FONTI: Record<string, Fonte> = {
     id: 'tuirArt12',
     norma: 'art. 12 TUIR (d.P.R. 917/1986)',
     descrizione:
-      'Detrazioni per carichi di famiglia: coniuge a carico (c.1 lett. a-b), figli a carico 21-30 anni (c.1 lett. c — per gli under 21 sostituita dall\'assegno unico universale, D.Lgs. 230/2021), ascendenti conviventi (c.1 lett. d, come ristretta dalla L. 207/2024). Il c.4 prescrive il troncamento dei rapporti alle prime quattro cifre decimali, come l\'art. 13 c.6. Link al testo vigente su Normattiva.',
+      'Detrazioni per carichi di famiglia: coniuge a carico (c.1 lett. a-b), figli a carico 21-30 anni (c.1 lett. c; per gli under 21 sostituita dall\'assegno unico universale, D.Lgs. 230/2021), ascendenti conviventi (c.1 lett. d, come ristretta dalla L. 207/2024). Il c.4 prescrive il troncamento dei rapporti alle prime quattro cifre decimali, come l\'art. 13 c.6. Link al testo vigente su Normattiva.',
     url: 'https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:decreto.del.presidente.della.repubblica:1986-12-22;917~art12!vig=',
     tipo: 'norma',
   },
@@ -169,7 +169,7 @@ export const FONTI: Record<string, Fonte> = {
     id: 'welfare',
     norma: 'art. 51 c.3 TUIR; L. 207/2024; circ. Agenzia Entrate n. 35/E del 04/11/2022',
     descrizione:
-      'Fringe benefit fino a 1.000 € (2.000 € con figli a carico) non concorrono al reddito di lavoro dipendente. Se il valore complessivo supera la soglia, l\'intero importo diventa imponibile — non solo l\'eccedenza (soglia, non franchigia; principio confermato dalla circolare 35/E anche per le soglie di annualità precedenti).',
+      'Fringe benefit fino a 1.000 € (2.000 € con figli a carico) non concorrono al reddito di lavoro dipendente. Se il valore complessivo supera la soglia, l\'intero importo diventa imponibile, non solo l\'eccedenza (soglia, non franchigia; principio confermato dalla circolare 35/E anche per le soglie di annualità precedenti).',
     url: 'https://www.agenziaentrate.gov.it/portale/documents/20143/4785312/circolare_welfare_aziendale_+n.+35+del+4+novembre+2022+.pdf/657de91b-6e75-2330-ce10-450e5f7a561b',
     tipo: 'prassi',
   },
@@ -186,7 +186,9 @@ export const FONTI: Record<string, Fonte> = {
     norma: 'art. 2120 c.c.',
     descrizione:
       'Il trattamento di fine rapporto si accantona nella misura della retribuzione annua divisa per 13,5 (al netto della rivalutazione).',
-    url: 'https://www.normattiva.it/eli/stato/REGIO.DECRETO/1942/03/16/262/CONSOLIDATED',
+    // URN con numero d'allegato (:2): il codice civile è un allegato del R.D.
+    // 262/1942, senza ":2" il deep-link ~art2120 cade sugli artt. 1-2 del decreto.
+    url: 'https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:regio.decreto:1942-03-16;262:2~art2120!vig=',
     tipo: 'norma',
   },
 }

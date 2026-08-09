@@ -63,10 +63,10 @@ export function CalculatorSemplice() {
         />
         <div>
           <p className="text-xs font-medium text-muted uppercase tracking-wide">
-            Jet HR — prototipo Product Builder
+            Jet HR · prototipo Product Builder
           </p>
           <h1 className="text-xl sm:text-2xl font-semibold text-ink">
-            Calcolatore RAL → Netto — versione semplice
+            Calcolatore RAL Netto, versione semplice
           </h1>
         </div>
       </header>
