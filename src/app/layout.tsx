@@ -20,7 +20,14 @@ export const metadata: Metadata = {
     siteName: 'Calcolatore RAL Netto',
     locale: 'it_IT',
     type: 'website',
-    images: [{ url: '/og.png', width: 1200, height: 630 }],
+    images: [
+      {
+        url: '/og.png',
+        width: 1200,
+        height: 630,
+        alt: 'Calcolatore RAL Netto, prototipo Jet HR in una finestra del browser',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
