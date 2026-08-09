@@ -8,7 +8,10 @@ const wixMadeforDisplay = Wix_Madefor_Display({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://calcolatore-ral-netto-jethr.vercel.app/AI-builder-jethr'),
+  // Il dominio Vercel ha la bot protection (Security Checkpoint) che può
+  // rispondere 403 agli scraper social: l'og.png passa dal portfolio, che
+  // serve l'asset via rewrite senza challenge ed è lo stesso dominio di og:url.
+  metadataBase: new URL('https://www.mariglianosimone.design/AI-builder-jethr'),
   title: 'Calcolatore RAL Netto | Jet HR',
   description:
     'Prototipo Jet HR: dalla RAL al netto annuo e mensile, con tutte le voci trattenute al lordo e le fonti normative di ogni calcolo.',
