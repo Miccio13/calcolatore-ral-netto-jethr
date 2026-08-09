@@ -22,8 +22,11 @@ rende `fonte` obbligatoria: il compilatore rifiuta una voce di calcolo senza nor
 **2. HTTP 200 non significa "raggiungibile".**
 Normattiva serve una pagina «Errore nel caricamento delle informazioni» con status
 200: tre fonti erano così, e due erano link rotti live in produzione. Su Normattiva
-usare la **forma ELI** (`/eli/stato/LEGGE/2024/12/30/207/CONSOLIDATED`), mai le URN
-`uri-res/N2Ls?urn:nir:…`. Prima di committare una fonte nuova:
+usare la **forma ELI** (`/eli/stato/LEGGE/2024/12/30/207/CONSOLIDATED`) o le URN
+**con deep-link all'articolo** (`uri-res/N2Ls?urn:nir:…~art13!vig=`), che servono il
+testo reale e sono più precise della ELI (puntano al singolo articolo, non all'intera
+legge). Le URN **senza** deep-link sono quelle che servivano la pagina d'errore: mai.
+In ogni caso una fonte non entra sulla fede del pattern URL — prima di committarla:
 `npx tsx scripts/verifica-fonti.ts`.
 
 ## Architettura
