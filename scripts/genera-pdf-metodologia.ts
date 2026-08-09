@@ -29,7 +29,7 @@ import { FONTI, type Fonte } from '../src/lib/tax/fonti'
 import { INPUT_DEFAULT } from '../src/lib/tax/types'
 import { BRAND_CSS, copertina, escapeHtml, fascia, fmt, pct } from './pdf-brand'
 
-const OGGI = '7 agosto 2026'
+const OGGI = '9 agosto 2026'
 
 function tipoLabel(tipo: Fonte['tipo']): string {
   return { norma: 'Norma', prassi: 'Prassi', 'atto-locale': 'Atto locale' }[tipo]
@@ -54,8 +54,8 @@ const NUMERO_TEST = contaTest()
 
 // --- Casi di validazione: confrontati con calcolatori pubblici in fase di ricerca ---
 const CASI_VALIDAZIONE = [
-  { ral: 35_000, nettoAtteso: 25_968, fonte: 'stipendionettocalcolatore.it — ral-35000-netto-2026' },
-  { ral: 60_000, nettoAtteso: 37_621, fonte: 'stipendionettocalcolatore.it — ral-60000-netto' },
+  { ral: 35_000, nettoAtteso: 25_968, fonte: 'stipendionettocalcolatore.it · ral-35000-netto-2026' },
+  { ral: 60_000, nettoAtteso: 37_621, fonte: 'stipendionettocalcolatore.it · ral-60000-netto' },
 ]
 
 const risultatiValidazione = CASI_VALIDAZIONE.map((c) => {
@@ -93,7 +93,7 @@ const esempioWelfare = {
 const RIGHE_MODELLO = [
   { voce: 'Contributi INPS c/dipendente', base: 'RAL', formula: '9,19% o 9,49%, +1% oltre 56.224 €', fonte: FONTI.inpsCirc6_2026 },
   { voce: 'Contributi INPS, apprendistato', base: 'RAL', formula: '5,84% flat, sostituisce l’aliquota standard', fonte: FONTI.apprendistato },
-  { voce: 'IRPEF lorda', base: 'Imponibile fiscale', formula: '23% / 33% / 43% per scaglioni', fonte: FONTI.tuirArt11 },
+  { voce: 'IRPEF lorda', base: 'Imponibile fiscale', formula: '23% / 33% / 43% per scaglioni', fonte: FONTI.ldb2026 },
   { voce: 'Detrazione lavoro dipendente', base: 'Reddito di riferimento', formula: 'da 1.955 € a 0, decrescente da 15.000 a 50.000', fonte: FONTI.tuirArt13 },
   { voce: 'Ulteriore detrazione cuneo fiscale', base: 'Reddito complessivo', formula: 'fino a 1.000 €, tra 20.000 e 40.000', fonte: FONTI.cuneoFiscale },
   { voce: 'Detrazione coniuge a carico', base: 'Reddito complessivo', formula: 'da 800 € a 0, tre fasce + micro-bonus', fonte: FONTI.tuirArt12 },
@@ -119,16 +119,16 @@ const html = `<!doctype html>
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<title>Jet HR — Calcolatore RAL → Netto: metodologia</title>
+<title>Jet HR · Calcolatore RAL Netto: metodologia</title>
 <style>${BRAND_CSS}</style>
 </head>
 <body>
 
 ${copertina({
   kicker: 'Product Builder · Esercizio di selezione',
-  titolo: 'Calcolatore RAL → Netto',
+  titolo: 'Calcolatore RAL Netto',
   sottotitolo: 'Metodologia di calcolo, parametri normativi e validazione',
-  meta: `Anno d’imposta <strong>2026</strong> · Caso di default: Milano, Lombardia — ogni variabile è personalizzabile<br>
+  meta: `Anno d’imposta <strong>2026</strong> · Caso di default: Milano, Lombardia, ogni variabile è personalizzabile<br>
     Documento generato automaticamente dai file sorgente del motore di calcolo · ${OGGI}`,
 })}
 
@@ -138,7 +138,7 @@ calcola il netto annuo e mensile percepito dal dipendente e tutte le voci di tas
 contribuzione trattenute al lordo.</p>
 <p>Il motore di calcolo (<code>src/lib/tax/</code>) è indipendente dall’interfaccia: ogni voce
 del risultato porta con sé la formula applicata e la norma che la impone, verificabile nel
-codice sorgente e in questo documento — generato automaticamente dagli stessi file che
+codice sorgente e in questo documento, generato automaticamente dagli stessi file che
 alimentano l’interfaccia, così che testo e codice non possano divergere.</p>
 <div class="callout">
   <p>Ogni fonte citata è un documento istituzionale: Normattiva, Agenzia delle Entrate,
@@ -151,21 +151,21 @@ alimentano l’interfaccia, così che testo e codice non possano divergere.</p>
 <p>Le assunzioni suggerite dal brief restano il <strong>prefilled</strong> del calcolatore,
 ma ogni variabile che incide realmente sul netto è gestibile dall’utente:</p>
 <ul>
-  <li>Dipendente impiegato, contratto a tempo indeterminato — <span class="muted">selezionabile: apprendistato</span></li>
-  <li>Residente a Milano, Lombardia — <span class="muted">selezionabile: ${REGIONI_2026.length} regioni e province autonome, ${COMUNI_2026.length} comuni, più inserimento manuale</span></li>
+  <li>Dipendente impiegato, contratto a tempo indeterminato · <span class="muted">selezionabile: apprendistato</span></li>
+  <li>Residente a Milano, Lombardia · <span class="muted">selezionabile: ${REGIONI_2026.length} regioni e province autonome, ${COMUNI_2026.length} comuni, più inserimento manuale</span></li>
   <li>Nessuna agevolazione fiscale particolare</li>
-  <li>Nessun familiare fiscalmente a carico — <span class="muted">selezionabile: coniuge, figli 21-30, altri familiari</span></li>
-  <li>Nessun welfare o fringe benefit — <span class="muted">selezionabile: importo annuo</span></li>
-  <li>13 mensilità — <span class="muted">più universale di 14 tra i CCNL in assenza di un contratto dichiarato; selezionabile: 12, 13, 14</span></li>
-  <li>Contratto attivo per l’intero anno d’imposta, 365 giorni — <span class="muted">selezionabile: 1-365</span></li>
+  <li>Nessun familiare fiscalmente a carico · <span class="muted">selezionabile: coniuge, figli 21-30, altri familiari</span></li>
+  <li>Nessun welfare o fringe benefit · <span class="muted">selezionabile: importo annuo</span></li>
+  <li>13 mensilità · <span class="muted">più universale di 14 tra i CCNL in assenza di un contratto dichiarato; selezionabile: 12, 13, 14</span></li>
+  <li>Contratto attivo per l’intero anno d’imposta, 365 giorni · <span class="muted">selezionabile: 1-365</span></li>
 </ul>
 <p>Nel caso di default non esistono altre fonti di reddito, quindi imponibile fiscale, reddito
 di lavoro dipendente e reddito complessivo coincidono. Il motore li tratta comunque come
 concetti distinti: è nella realtà che divergono, non in questo caso.</p>
 
 <h2>3. Il modello di calcolo</h2>
-<p>Ogni passaggio della catena usa la propria base imponibile — non tutte le voci si calcolano
-sulla RAL:</p>
+<p>Ogni passaggio della catena usa la propria base imponibile: non tutte le voci si calcolano
+sulla RAL.</p>
 <table>
   <thead>
     <tr><th>Voce</th><th>Base imponibile</th><th>Formula</th><th>Norma</th></tr>
@@ -266,8 +266,8 @@ ${TRATTAMENTO_INTEGRATIVO_2026.correttivoCapienza} €.</p>
 <div class="keep">
 <h3>Welfare e fringe benefit · art. 51 c.3 TUIR</h3>
 <p>Esenti fino a ${fmt(WELFARE_2026.sogliaGenerale)} € (${fmt(WELFARE_2026.sogliaConFigliACarico)} €
-con figli a carico). Superata la soglia, l’<strong>intero importo</strong> — non solo
-l’eccedenza — concorre a formare il reddito imponibile: è una soglia, non una franchigia.</p>
+con figli a carico). Superata la soglia, l’<strong>intero importo</strong> (non solo
+l’eccedenza) concorre a formare il reddito imponibile: è una soglia, non una franchigia.</p>
 </div>
 
 <div class="keep">
@@ -299,8 +299,8 @@ soglia inserite a mano. Sotto, la combinazione di default:</p>
 <h3>Costo azienda</h3>
 <table>
   <tbody>
-    <tr><td>Contributi a carico azienda — terziario</td><td class="num">${pct(COSTO_AZIENDA_2026.contributiPerSettore.terziario, 1)}</td></tr>
-    <tr><td>Contributi a carico azienda — industria</td><td class="num">${pct(COSTO_AZIENDA_2026.contributiPerSettore.industria, 1)}</td></tr>
+    <tr><td>Contributi a carico azienda, terziario</td><td class="num">${pct(COSTO_AZIENDA_2026.contributiPerSettore.terziario, 1)}</td></tr>
+    <tr><td>Contributi a carico azienda, industria</td><td class="num">${pct(COSTO_AZIENDA_2026.contributiPerSettore.industria, 1)}</td></tr>
     <tr><td>TFR accantonato</td><td class="num">RAL / 13,5</td></tr>
   </tbody>
 </table>
@@ -319,7 +319,7 @@ soglia inserite a mano. Sotto, la combinazione di default:</p>
   <li><strong>Il netto mensile dipende dalle mensilità del CCNL.</strong> Su una RAL di
   35.000 €, con 12 mensilità il netto mensile è
   <span class="accent">${fmt(esempioMensilita.con12.nettoMensile)} €</span>, con 14 è
-  <span class="accent">${fmt(esempioMensilita.con14.nettoMensile)} €</span> — a parità di netto
+  <span class="accent">${fmt(esempioMensilita.con14.nettoMensile)} €</span>: a parità di netto
   annuo (${fmt(esempioMensilita.con12.nettoAnnuo)} €), cambia solo la ripartizione. Dividere
   sempre per 12 produce un numero sbagliato.</li>
 
@@ -328,7 +328,7 @@ soglia inserite a mano. Sotto, la combinazione di default:</p>
   a circa 3.100 €, ma si perde interamente il trattamento integrativo di 1.200 €, che è una
   soglia netta e non un importo decrescente. Esempio dal motore, a cavallo della soglia:
   netto <span class="accent">${fmt(esempioSoglia15k.sotto.nettoAnnuo, 2)} €</span> appena sotto,
-  netto <span class="accent">${fmt(esempioSoglia15k.sopra.nettoAnnuo, 2)} €</span> appena sopra —
+  netto <span class="accent">${fmt(esempioSoglia15k.sopra.nettoAnnuo, 2)} €</span> appena sopra:
   ${fmt(esempioSoglia15k.sotto.nettoAnnuo - esempioSoglia15k.sopra.nettoAnnuo, 2)} € in meno a
   fronte di 2 € di RAL in più. Scoperto scrivendo i test del motore, non ipotizzato a tavolino.</li>
 
@@ -414,7 +414,10 @@ fonte di alcun parametro: quelli vengono tutti da documenti istituzionali.</p>
 <h2>8. Fonti in sintesi</h2>
 <p>Elenco compatto: ogni riferimento è un link alla fonte. Il dettaglio con URL per esteso,
 ambito di utilizzo e data di consultazione è nel documento
-<strong>&laquo;Fonti normative&raquo;</strong> allegato.</p>
+<strong>&laquo;Fonti normative&raquo;</strong> allegato. Le voci qui sono
+${fontiUniche.length} per ${Object.keys(FONTI).length} fonti del registro: tre fonti
+(somma integrativa, trattamento integrativo e circolare 4/E 2025) condividono lo stesso
+documento dell'Agenzia delle Entrate e compaiono una sola volta.</p>
 <table>
   <thead><tr><th style="width:22%">Tipo</th><th>Riferimento</th></tr></thead>
   <tbody>

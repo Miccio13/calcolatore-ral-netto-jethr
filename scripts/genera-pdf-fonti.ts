@@ -54,7 +54,7 @@ const RUOLI_DI_CONTESTO: Record<string, string> = {
   addizionaleRegionaleLombardia:
     'Verifica dedicata sulla regione del caso di default: base giuridica e aliquote lette singolarmente, prima di estendere la copertura a tutte le regioni.',
   addizionaleComunaleMilano:
-    'Verifica dedicata sul comune del caso di default, da cui proviene anche la conferma che l’esenzione comunale è una soglia e non una franchigia — meccanismo poi applicato a tutti i comuni.',
+    'Verifica dedicata sul comune del caso di default, da cui proviene anche la conferma che l’esenzione comunale è una soglia e non una franchigia, meccanismo poi applicato a tutti i comuni.',
   circolareAde4e2022:
     'Chiarisce la meccanica della maggiorazione di 65 € (art. 13 c.1.1): spetta per intero, senza ragguaglio al periodo di lavoro. Nel motore è per questo l’unico addendo che si somma dopo il riproporzionamento della detrazione.',
   addizionaleRegionaleLazio:
@@ -71,7 +71,7 @@ const html = `<!doctype html>
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<title>Jet HR — Calcolatore RAL → Netto: fonti normative</title>
+<title>Jet HR · Calcolatore RAL Netto: fonti normative</title>
 <style>
 ${BRAND_CSS}
 ${FONTI_CSS}
@@ -97,8 +97,8 @@ una nota che rimanda a un blog fiscale vale meno di nessuna nota.</p>
 
 <p>La regola non è affidata alla buona volontà. Le fonti vivono in un unico registro
 tipizzato (<code>src/lib/tax/fonti.ts</code>), il tipo <code>VoceBreakdown</code> rende la
-fonte un campo obbligatorio — il compilatore rifiuta una voce di calcolo senza norma di
-riferimento — e un test automatico verifica che ogni URL appartenga a uno di questi domini:</p>
+fonte un campo obbligatorio (il compilatore rifiuta una voce di calcolo senza norma di
+riferimento) e un test automatico verifica che ogni URL appartenga a uno di questi domini:</p>
 
 ${listaDomini()}
 

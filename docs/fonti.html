@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<title>Jet HR — Calcolatore RAL → Netto: fonti normative</title>
+<title>Jet HR · Calcolatore RAL Netto: fonti normative</title>
 <style>
 
   @font-face {
@@ -158,6 +158,8 @@
 
   .domini { columns: 2; column-gap: 18pt; margin: 8pt 0 14pt; }
   .domini li { margin-bottom: 4pt; break-inside: avoid; }
+  /* La chip è già l'affordance: niente sottolineatura doppia sui link. */
+  .domini a { text-decoration: none; }
 
   .conteggio {
     display: flex; gap: 26pt; margin: 0 0 18pt;
@@ -166,6 +168,7 @@
   .conteggio div { line-height: 1.3; }
   .conteggio .n { font-size: 17pt; font-weight: 700; display: block; }
   .conteggio .l { font-size: 8pt; text-transform: uppercase; letter-spacing: 0.05em; color: #33501a; font-weight: 600; }
+
 </style>
 </head>
 <body>
@@ -211,17 +214,17 @@ una nota che rimanda a un blog fiscale vale meno di nessuna nota.</p>
 
 <p>La regola non è affidata alla buona volontà. Le fonti vivono in un unico registro
 tipizzato (<code>src/lib/tax/fonti.ts</code>), il tipo <code>VoceBreakdown</code> rende la
-fonte un campo obbligatorio — il compilatore rifiuta una voce di calcolo senza norma di
-riferimento — e un test automatico verifica che ogni URL appartenga a uno di questi domini:</p>
+fonte un campo obbligatorio (il compilatore rifiuta una voce di calcolo senza norma di
+riferimento) e un test automatico verifica che ogni URL appartenga a uno di questi domini:</p>
 
 <ul class="domini">
-  <li><code>normattiva.it</code></li>
-  <li><code>gazzettaufficiale.it</code></li>
-  <li><code>agenziaentrate.gov.it</code></li>
-  <li><code>finanze.gov.it</code></li>
-  <li><code>finanze.it</code></li>
-  <li><code>inps.it</code></li>
-  <li><code>mef.gov.it</code></li>
+  <li><a href="https://www.normattiva.it/"><code>normattiva.it</code></a></li>
+  <li><a href="https://www.gazzettaufficiale.it/"><code>gazzettaufficiale.it</code></a></li>
+  <li><a href="https://www.agenziaentrate.gov.it/"><code>agenziaentrate.gov.it</code></a></li>
+  <li><a href="https://www.finanze.gov.it/"><code>finanze.gov.it</code></a></li>
+  <li><a href="https://www.finanze.it/"><code>finanze.it</code></a></li>
+  <li><a href="https://www.inps.it/"><code>inps.it</code></a></li>
+  <li><a href="https://www.mef.gov.it/"><code>mef.gov.it</code></a></li>
 </ul>
 
 <div class="conteggio">
@@ -254,7 +257,7 @@ ogni voce possibile e raccogliendo, per ciascuna fonte, chi la cita.</p>
     <span class="badge">Norma</span>
     <span class="fonte-norma">art. 13 c.1, c.1.1, c.6 e c.6-bis TUIR</span>
   </div>
-  <p class="fonte-desc">Detrazione per redditi di lavoro dipendente, decrescente e azzerata a 50.000 €; il reddito di riferimento è il reddito complessivo al netto dell&#39;abitazione principale. Il c.1.1 aggiunge 65 € per redditi tra 25.000 e 35.000; il c.6 prescrive che il rapporto delle formule si assuma nelle prime quattro cifre decimali (troncamento); il minimo di 690 € (1.380 € per il tempo determinato) vale nel solo primo scaglione. Link al testo vigente su Normattiva — il PDF statico dell&#39;Agenzia delle Entrate citato in precedenza riportava la versione 2008 dell&#39;articolo.</p>
+  <p class="fonte-desc">Detrazione per redditi di lavoro dipendente, decrescente e azzerata a 50.000 €; il reddito di riferimento è il reddito complessivo al netto dell&#39;abitazione principale. Il c.1.1 aggiunge 65 € per redditi tra 25.000 e 35.000; il c.6 prescrive che il rapporto delle formule si assuma nelle prime quattro cifre decimali (troncamento); il minimo di 690 € (1.380 € per il tempo determinato) vale nel solo primo scaglione. Link al testo vigente su Normattiva: il PDF statico dell&#39;Agenzia delle Entrate citato in precedenza riportava la versione 2008 dell&#39;articolo.</p>
   <p class="fonte-uso"><span class="fonte-uso-label">Voci che la citano</span> Detrazione lavoro dipendente</p>
   <a class="url" href="https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:decreto.del.presidente.della.repubblica:1986-12-22;917~art13!vig=">https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:decreto.del.presidente.della.repubblica:1986-12-22;917~art13!vig=</a>
 </div>
@@ -294,7 +297,7 @@ ogni voce possibile e raccogliendo, per ciascuna fonte, chi la cita.</p>
     <span class="badge">Atto locale</span>
     <span class="fonte-norma">Delibere comunali 2025/2026, art. 1 c.142-143 L. 296/2006</span>
   </div>
-  <p class="fonte-desc">Addizionale comunale IRPEF di 11 capoluoghi (Milano, Roma, Napoli, Torino, Genova, Bologna, Firenze, Palermo, Bari, Venezia, Cagliari), ciascuno verificato singolarmente sul tool di ricerca del Dipartimento delle Finanze con il codice catastale del comune. Copertura parziale e dichiarata: l&#39;Italia ha oltre 8.000 comuni, nessun dataset bulk scaricabile è stato trovato sul sito del Dip. Finanze — per i comuni non elencati il calcolatore offre l&#39;inserimento manuale di aliquota e soglia.</p>
+  <p class="fonte-desc">Addizionale comunale IRPEF di 11 capoluoghi (Milano, Roma, Napoli, Torino, Genova, Bologna, Firenze, Palermo, Bari, Venezia, Cagliari), ciascuno verificato singolarmente sul tool di ricerca del Dipartimento delle Finanze con il codice catastale del comune. Copertura parziale e dichiarata: l&#39;Italia ha oltre 8.000 comuni, nessun dataset bulk scaricabile è stato trovato sul sito del Dip. Finanze; per i comuni non elencati il calcolatore offre l&#39;inserimento manuale di aliquota e soglia.</p>
   <p class="fonte-uso"><span class="fonte-uso-label">Voci che la citano</span> Addizionale comunale</p>
   <a class="url" href="https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/nuova_addcomirpef/sceltaregione.htm">https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/nuova_addcomirpef/sceltaregione.htm</a>
 </div>
@@ -314,7 +317,7 @@ ogni voce possibile e raccogliendo, per ciascuna fonte, chi la cita.</p>
     <span class="badge">Norma</span>
     <span class="fonte-norma">art. 12 TUIR (d.P.R. 917/1986)</span>
   </div>
-  <p class="fonte-desc">Detrazioni per carichi di famiglia: coniuge a carico (c.1 lett. a-b), figli a carico 21-30 anni (c.1 lett. c — per gli under 21 sostituita dall&#39;assegno unico universale, D.Lgs. 230/2021), ascendenti conviventi (c.1 lett. d, come ristretta dalla L. 207/2024). Il c.4 prescrive il troncamento dei rapporti alle prime quattro cifre decimali, come l&#39;art. 13 c.6. Link al testo vigente su Normattiva.</p>
+  <p class="fonte-desc">Detrazioni per carichi di famiglia: coniuge a carico (c.1 lett. a-b), figli a carico 21-30 anni (c.1 lett. c; per gli under 21 sostituita dall&#39;assegno unico universale, D.Lgs. 230/2021), ascendenti conviventi (c.1 lett. d, come ristretta dalla L. 207/2024). Il c.4 prescrive il troncamento dei rapporti alle prime quattro cifre decimali, come l&#39;art. 13 c.6. Link al testo vigente su Normattiva.</p>
   <p class="fonte-uso"><span class="fonte-uso-label">Voci che la citano</span> Detrazione altri familiari a carico · Detrazione coniuge a carico · Detrazione figli a carico</p>
   <a class="url" href="https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:decreto.del.presidente.della.repubblica:1986-12-22;917~art12!vig=">https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:decreto.del.presidente.della.repubblica:1986-12-22;917~art12!vig=</a>
 </div>
@@ -324,7 +327,7 @@ ogni voce possibile e raccogliendo, per ciascuna fonte, chi la cita.</p>
     <span class="badge">Prassi</span>
     <span class="fonte-norma">art. 51 c.3 TUIR; L. 207/2024; circ. Agenzia Entrate n. 35/E del 04/11/2022</span>
   </div>
-  <p class="fonte-desc">Fringe benefit fino a 1.000 € (2.000 € con figli a carico) non concorrono al reddito di lavoro dipendente. Se il valore complessivo supera la soglia, l&#39;intero importo diventa imponibile — non solo l&#39;eccedenza (soglia, non franchigia; principio confermato dalla circolare 35/E anche per le soglie di annualità precedenti).</p>
+  <p class="fonte-desc">Fringe benefit fino a 1.000 € (2.000 € con figli a carico) non concorrono al reddito di lavoro dipendente. Se il valore complessivo supera la soglia, l&#39;intero importo diventa imponibile, non solo l&#39;eccedenza (soglia, non franchigia; principio confermato dalla circolare 35/E anche per le soglie di annualità precedenti).</p>
   <p class="fonte-uso"><span class="fonte-uso-label">Voci che la citano</span> Welfare / fringe benefit</p>
   <a class="url" href="https://www.agenziaentrate.gov.it/portale/documents/20143/4785312/circolare_welfare_aziendale_+n.+35+del+4+novembre+2022+.pdf/657de91b-6e75-2330-ce10-450e5f7a561b">https://www.agenziaentrate.gov.it/portale/documents/20143/4785312/circolare_welfare_aziendale_+n.+35+del+4+novembre+2022+.pdf/657de91b-6e75-2330-ce10-450e5f7a561b</a>
 </div>
@@ -346,7 +349,7 @@ ogni voce possibile e raccogliendo, per ciascuna fonte, chi la cita.</p>
   </div>
   <p class="fonte-desc">Il trattamento di fine rapporto si accantona nella misura della retribuzione annua divisa per 13,5 (al netto della rivalutazione).</p>
   <p class="fonte-uso"><span class="fonte-uso-label">Voci che la citano</span> TFR accantonato</p>
-  <a class="url" href="https://www.normattiva.it/eli/stato/REGIO.DECRETO/1942/03/16/262/CONSOLIDATED">https://www.normattiva.it/eli/stato/REGIO.DECRETO/1942/03/16/262/CONSOLIDATED</a>
+  <a class="url" href="https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:regio.decreto:1942-03-16;262:2~art2120!vig=">https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:regio.decreto:1942-03-16;262:2~art2120!vig=</a>
 </div>
 
 <div class="page-break"></div>
@@ -444,7 +447,7 @@ esplicitamente, perché una derivazione automatica sarebbe una finzione.</p>
     <span class="fonte-norma">Delibera Comune di Milano n. 46 del 28/09/2020</span>
   </div>
   <p class="fonte-desc">Addizionale comunale IRPEF di Milano: aliquota unica 0,80%, con esenzione totale (soglia, non franchigia) per reddito imponibile fino a 23.000 €.</p>
-  <p class="fonte-uso"><span class="fonte-uso-label">Ruolo nel modello</span> Verifica dedicata sul comune del caso di default, da cui proviene anche la conferma che l’esenzione comunale è una soglia e non una franchigia — meccanismo poi applicato a tutti i comuni.</p>
+  <p class="fonte-uso"><span class="fonte-uso-label">Ruolo nel modello</span> Verifica dedicata sul comune del caso di default, da cui proviene anche la conferma che l’esenzione comunale è una soglia e non una franchigia, meccanismo poi applicato a tutti i comuni.</p>
   <a class="url" href="https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/nuova_addcomirpef/risultato.htm?anno=9999&amp;pr=MI&amp;cc=F205&amp;r=1">https://www1.finanze.gov.it/finanze2/dipartimentopolitichefiscali/fiscalitalocale/nuova_addcomirpef/risultato.htm?anno=9999&amp;pr=MI&amp;cc=F205&amp;r=1</a>
 </div>
 

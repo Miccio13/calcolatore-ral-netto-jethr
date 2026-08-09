@@ -1,6 +1,6 @@
 @AGENTS.md
 
-# Calcolatore RAL → Netto — Jet HR
+# Calcolatore RAL Netto · Jet HR
 
 Prototipo per la selezione **Product Builder @ Jet HR**. Data una RAL calcola netto
 annuo e mensile e tutte le voci trattenute al lordo, con la fonte normativa di ogni
@@ -90,13 +90,13 @@ divergere dall'implementazione.
 ./scripts/genera-pdf.sh    # rigenera entrambi + verifica fonti e link
 ```
 
-Se cambi un parametro, una fonte o lo scope: rigenera i PDF e aggiorna `README.md`
-e `src/components/ComeSiCalcola.tsx`, che raccontano le stesse cose all'utente.
+Se cambi un parametro, una fonte o lo scope: rigenera i PDF e aggiorna `README.md`,
+che racconta le stesse cose all'utente.
 
 ## Comandi
 
 ```bash
-npx vitest run                    # 121 test, offline, ~300ms
+npx vitest run                    # 136 test, offline, ~300ms
 npx tsc --noEmit
 npm run build                     # usa --webpack, vedi sopra
 npm run dev                       # http://localhost:3000/AI-builder-jethr
@@ -109,8 +109,9 @@ npx tsx scripts/verifica-fonti.ts # fonti raggiungibili + link nei PDF
   e i nomi seguono la norma (`calcolaDetrazioneLavoroDipendente` ↔ art. 13 TUIR),
   così il codice si confronta a vista con la fonte.
 - **Test-first** sul motore: un modulo nuovo nasce col suo file in `__tests__/`.
-- **Le semplificazioni si dichiarano**, non si nascondono. Ogni esclusione sta in
-  `ComeSiCalcola.tsx`, nel README e nel PDF metodologico, con la ragione.
+- **Le semplificazioni si dichiarano**, non si nascondono. Ogni esclusione sta nel
+  README e nel PDF metodologico, con la ragione (la sezione UI "Come si calcola"
+  è stata rimossa su richiesta).
 - Quando una fonte resta incerta, si scrive nel registro (vedi `apprendistato`:
   confermata su tre fonti ma testo primario non recuperato). Meglio un limite
   dichiarato di una certezza finta.
