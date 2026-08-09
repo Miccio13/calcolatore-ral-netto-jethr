@@ -26,6 +26,10 @@ usare la **forma ELI** (`/eli/stato/LEGGE/2024/12/30/207/CONSOLIDATED`) o le URN
 **con deep-link all'articolo** (`uri-res/N2Ls?urn:nir:…~art13!vig=`), che servono il
 testo reale e sono più precise della ELI (puntano al singolo articolo, non all'intera
 legge). Le URN **senza** deep-link sono quelle che servivano la pagina d'errore: mai.
+Per gli articoli di codici **allegati** a un atto (es. codice civile nel R.D.
+262/1942) la URN vuole il numero d'allegato dopo quello dell'atto
+(`;262:2~art2120!vig=`): senza `:2` il deep-link cade sugli artt. 1-2 del
+decreto di approvazione, non sull'articolo del codice.
 In ogni caso una fonte non entra sulla fede del pattern URL — prima di committarla:
 `npx tsx scripts/verifica-fonti.ts`.
 

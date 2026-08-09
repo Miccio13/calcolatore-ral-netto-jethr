@@ -10,11 +10,11 @@
 import { writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { COMUNI_2026 } from '../src/lib/tax/comuni-2026'
-import { DOMINI_ISTITUZIONALI, FONTI, type Fonte } from '../src/lib/tax/fonti'
+import { FONTI, type Fonte } from '../src/lib/tax/fonti'
 import { REGIONI_2026 } from '../src/lib/tax/regioni-2026'
 import { INPUT_DEFAULT } from '../src/lib/tax/types'
 import { BRAND_CSS, copertina } from './pdf-brand'
-import { FONTI_CSS, raccogliVociPerFonte, scheda } from './pdf-fonti-condiviso'
+import { FONTI_CSS, listaDomini, raccogliVociPerFonte, scheda } from './pdf-fonti-condiviso'
 
 const OGGI = '9 agosto 2026'
 
@@ -100,9 +100,7 @@ tipizzato (<code>src/lib/tax/fonti.ts</code>), il tipo <code>VoceBreakdown</code
 fonte un campo obbligatorio — il compilatore rifiuta una voce di calcolo senza norma di
 riferimento — e un test automatico verifica che ogni URL appartenga a uno di questi domini:</p>
 
-<ul class="domini">
-  ${DOMINI_ISTITUZIONALI.map((d) => `<li><code>${d}</code></li>`).join('\n  ')}
-</ul>
+${listaDomini()}
 
 <div class="conteggio">
   <div><span class="n">${fonti.length}</span><span class="l">Fonti totali</span></div>
