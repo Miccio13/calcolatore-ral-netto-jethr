@@ -40,6 +40,9 @@ genera genera-pdf-metodologia.ts metodologia.html \
 genera genera-pdf-fonti.ts fonti.html \
   "Jet-HR_Calcolatore-RAL-Netto_Fonti.pdf" "Fonti normative"
 
+genera genera-pdf-fonti-semplice.ts fonti-semplice.html \
+  "Jet-HR_Calcolatore-RAL-Netto_Fonti-Semplice.pdf" "Fonti normative (versione semplice)"
+
 # Verifica subito che le fonti siano raggiungibili e che i link nei PDF siano
 # cliccabili: un documento che cita fonti irraggiungibili è peggio di uno che non
 # le cita. Richiede rete; se non c'è, salta la verifica senza far fallire il

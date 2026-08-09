@@ -8,7 +8,7 @@ type OpzioniContributiInps = {
   /**
    * L'aliquota aggiuntiva dell'1% oltre la 1ª fascia pensionabile è prevista
    * dalla circolare INPS 6/2026 per il regime contributivo standard. Per
-   * l'apprendistato (regime a sé, art. 1 c.773 L. 296/2006) non abbiamo una
+   * l'apprendistato (regime a sé, art. 21 c.6 L. 41/1986; msg. INPS 3618/2023) non abbiamo una
    * conferma che la stessa soglia si applichi identicamente: disattivata di
    * default quando si passa un'aliquota diversa da quella standard, per non
    * inventare un meccanismo non verificato.

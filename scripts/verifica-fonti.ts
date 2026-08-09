@@ -28,6 +28,7 @@ const MARCATORI_DI_ERRORE = ['Errore nel caricamento delle informazioni', 'Norma
 const PDF_ATTESI = [
   'docs/Jet-HR_Calcolatore-RAL-Netto_Metodologia.pdf',
   'docs/Jet-HR_Calcolatore-RAL-Netto_Fonti.pdf',
+  'docs/Jet-HR_Calcolatore-RAL-Netto_Fonti-Semplice.pdf',
 ]
 
 type Esito = { ok: boolean; messaggio: string }
